@@ -33,14 +33,14 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
       {/* Mobile: Full-screen Swipe Experience - No vertical scroll */}
-      <div className="md:hidden fixed inset-0 bottom-[72px] flex flex-col bg-black overflow-hidden">
-        {/* Floating Header */}
-        <header className="absolute top-0 left-0 right-0 z-50 px-5 pt-4 pb-3">
+      <div className="md:hidden fixed inset-0 bottom-[72px] flex flex-col bg-[var(--color-bg)] overflow-hidden">
+        {/* Header */}
+        <header className="px-5 pt-4 pb-3 bg-[var(--color-surface)] border-b border-[var(--color-border)]">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-black text-white drop-shadow-lg">finango</h1>
+            <h1 className="text-xl font-black text-[var(--color-primary)]">finango</h1>
             <button
               onClick={toggleLocale}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-xs font-medium text-white"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-bg)] text-xs font-medium text-[var(--color-text-secondary)]"
             >
               <Globe size={12} />
               <span className="uppercase">{locale}</span>
@@ -49,7 +49,7 @@ export default function Home() {
         </header>
 
         {/* Full-screen Swipe Stack */}
-        <div className="flex-1 pt-16 pb-4 px-4">
+        <div className="flex-1 py-4 px-4">
           <SwipeStack assets={allAssets} />
         </div>
       </div>

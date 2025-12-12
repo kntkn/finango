@@ -180,17 +180,17 @@ export function SwipeStack({ assets }: SwipeStackProps) {
         <div className="w-16 h-16 rounded-full bg-[var(--color-accent)]/10 flex items-center justify-center mb-5">
           <Check className="w-8 h-8 text-[var(--color-accent)]" />
         </div>
-        <h3 className="text-xl font-bold text-white mb-2">
+        <h3 className="text-xl font-bold text-[var(--color-text)] mb-2">
           {locale === 'ja' ? '完了' : 'Done'}
         </h3>
-        <p className="text-white/60 text-sm mb-6 max-w-[240px]">
+        <p className="text-[var(--color-text-muted)] text-sm mb-6 max-w-[240px]">
           {locale === 'ja'
             ? 'マーケットでお気に入りを確認'
             : 'Check favorites in Marketplace'}
         </p>
         <button
           onClick={resetStack}
-          className="flex items-center gap-2 px-5 py-2.5 bg-white text-[var(--color-primary)] rounded-full font-semibold text-sm"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[var(--color-primary)] text-white rounded-full font-semibold text-sm"
         >
           <RefreshCw size={16} />
           <span>{locale === 'ja' ? '最初から' : 'Restart'}</span>
@@ -222,15 +222,15 @@ export function SwipeStack({ assets }: SwipeStackProps) {
             key={index}
             className={`w-1.5 h-1.5 rounded-full transition-all ${
               index < currentIndex
-                ? 'bg-white/40'
+                ? 'bg-[var(--color-primary)]/30'
                 : index === currentIndex
-                ? 'bg-white'
-                : 'bg-white/20'
+                ? 'bg-[var(--color-primary)]'
+                : 'bg-[var(--color-border)]'
             }`}
           />
         ))}
         {assets.length > 10 && (
-          <span className="text-white/40 text-xs ml-1">+{assets.length - 10}</span>
+          <span className="text-[var(--color-text-muted)] text-xs ml-1">+{assets.length - 10}</span>
         )}
       </div>
     </div>
