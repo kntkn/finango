@@ -32,15 +32,15 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
-      {/* Mobile: Swipe Discovery Experience */}
-      <div className="md:hidden">
-        {/* Minimal Header */}
-        <header className="sticky top-0 z-40 bg-[var(--color-surface)] border-b border-[var(--color-border)] px-4 py-3">
+      {/* Mobile: Full-screen Swipe Experience - No vertical scroll */}
+      <div className="md:hidden fixed inset-0 bottom-[72px] flex flex-col bg-black overflow-hidden">
+        {/* Floating Header */}
+        <header className="absolute top-0 left-0 right-0 z-50 px-5 pt-4 pb-3">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-bold text-[var(--color-text)]">finango</h1>
+            <h1 className="text-xl font-black text-white drop-shadow-lg">finango</h1>
             <button
               onClick={toggleLocale}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-bg)] text-xs font-medium text-[var(--color-text-secondary)]"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-xs font-medium text-white"
             >
               <Globe size={12} />
               <span className="uppercase">{locale}</span>
@@ -48,20 +48,10 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Hero Text */}
-        <section className="px-5 pt-6 pb-3">
-          <p className="text-sm text-[var(--color-text-muted)] font-medium tracking-wide uppercase">
-            {locale === 'ja' ? '今日のおすすめ' : 'Today\'s Picks'}
-          </p>
-          <h2 className="text-xl font-bold text-[var(--color-text)] mt-1">
-            {locale === 'ja' ? '新しい資産との出会い' : 'Discover New Assets'}
-          </h2>
-        </section>
-
-        {/* Swipe Stack */}
-        <section className="px-4 pb-6">
+        {/* Full-screen Swipe Stack */}
+        <div className="flex-1 pt-16 pb-4 px-4">
           <SwipeStack assets={allAssets} />
-        </section>
+        </div>
       </div>
 
       {/* Desktop: Grid Discovery Experience */}

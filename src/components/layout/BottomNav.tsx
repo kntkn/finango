@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Compass, ShoppingBag, User, Globe, Settings } from 'lucide-react';
+import { Home, ShoppingBag, User, Globe } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useLikes } from '@/lib/likes';
 
@@ -14,9 +14,9 @@ export default function BottomNav() {
   const navItems = [
     {
       href: '/',
-      icon: Compass,
-      labelEn: 'Discover',
-      labelJa: 'ディスカバー',
+      icon: Home,
+      labelEn: 'Home',
+      labelJa: 'ホーム',
       isMain: false
     },
     {
