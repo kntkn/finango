@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, useMotionValue, useTransform, PanInfo, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -19,102 +19,129 @@ export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
   const router = useRouter();
   const { locale } = useI18n();
   const [exitX, setExitX] = useState(0);
+  const isDragging = useRef(false);
 
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-15, 15]);
-  const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0.5, 1, 1, 1, 0.5]);
 
-  // Visual feedback indicators
-  const likeOpacity = useTransform(x, [0, 100], [0, 1]);
-  const passOpacity = useTransform(x, [-100, 0], [1, 0]);
-  const likeScale = useTransform(x, [0, 100], [0.8, 1]);
-  const passScale = useTransform(x, [-100, 0], [1, 0.8]);
+  // Smoother rotation and opacity transforms
+  const rotate = useTransform(x, [-150, 0, 150], [-8, 0, 8]);
+  const cardOpacity = useTransform(x, [-150, 0, 150], [0.8, 1, 0.8]);
+
+  // Visual feedback - appear earlier and smoother
+  const likeOpacity = useTransform(x, [20, 80], [0, 1]);
+  const passOpacity = useTransform(x, [-80, -20], [1, 0]);
+
+  const handleDragStart = () => {
+    isDragging.current = true;
+  };
 
   const handleDragEnd = (_: unknown, info: PanInfo) => {
-    const threshold = 100;
-    if (info.offset.x > threshold) {
-      setExitX(500);
+    isDragging.current = false;
+
+    // Lower threshold for easier swiping (50px instead of 100)
+    const threshold = 50;
+    // Also check velocity for quick flicks
+    const velocityThreshold = 300;
+
+    if (info.offset.x > threshold || info.velocity.x > velocityThreshold) {
+      setExitX(400);
       onSwipe('right');
-    } else if (info.offset.x < -threshold) {
-      setExitX(-500);
+    } else if (info.offset.x < -threshold || info.velocity.x < -velocityThreshold) {
+      setExitX(-400);
       onSwipe('left');
     }
   };
 
   const handleCardTap = () => {
-    router.push(`/asset/${asset.id}`);
+    // Only navigate if not dragging
+    if (!isDragging.current) {
+      router.push(`/asset/${asset.id}`);
+    }
   };
 
-  const categoryColor = categories.find(c => c.id === asset.categoryId)?.color || '#6366f1';
+  const categoryColor = categories.find(c => c.id === asset.categoryId)?.color || '#0ea5e9';
 
   return (
     <motion.div
-      className={`absolute inset-0 ${isTop ? 'cursor-grab active:cursor-grabbing' : 'pointer-events-none'}`}
-      style={{ x, rotate, opacity }}
+      className={`absolute inset-0 ${isTop ? 'z-10' : 'z-0'}`}
+      style={{
+        x,
+        rotate,
+        opacity: cardOpacity,
+      }}
       drag={isTop ? 'x' : false}
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.9}
+      dragDirectionLock
+      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      dragElastic={0.5}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      initial={{ scale: isTop ? 1 : 0.92, y: isTop ? 0 : 16 }}
-      animate={{ scale: isTop ? 1 : 0.92, y: isTop ? 0 : 16 }}
-      exit={{ x: exitX, opacity: 0, transition: { duration: 0.3 } }}
-      whileTap={{ scale: isTop ? 0.98 : 0.92 }}
+      initial={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 12, opacity: isTop ? 1 : 0.7 }}
+      animate={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 12, opacity: isTop ? 1 : 0.7 }}
+      exit={{
+        x: exitX,
+        opacity: 0,
+        rotate: exitX > 0 ? 15 : -15,
+        transition: { duration: 0.2, ease: 'easeOut' }
+      }}
+      whileDrag={{ cursor: 'grabbing' }}
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
     >
-      {/* Magazine-style full-bleed card */}
+      {/* Card Container */}
       <div
         onClick={handleCardTap}
-        className="relative h-full w-full rounded-3xl overflow-hidden shadow-2xl"
+        className="relative h-full w-full rounded-2xl overflow-hidden shadow-2xl cursor-pointer select-none"
+        style={{ touchAction: 'pan-y' }}
       >
         {/* Full-bleed Image */}
         <Image
           src={asset.image}
           alt={asset.name}
           fill
-          className="object-cover"
+          className="object-cover pointer-events-none"
           priority={isTop}
           sizes="100vw"
+          draggable={false}
         />
 
-        {/* Gradient overlays for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30" />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20 pointer-events-none" />
 
-        {/* Swipe feedback icons - minimal */}
+        {/* Swipe feedback - Like */}
         {isTop && (
           <>
-            {/* Like indicator */}
             <motion.div
-              style={{ opacity: likeOpacity, scale: likeScale }}
-              className="absolute top-1/2 right-8 -translate-y-1/2 w-20 h-20 rounded-full bg-rose-500/90 flex items-center justify-center shadow-2xl"
+              style={{ opacity: likeOpacity }}
+              className="absolute top-1/2 right-6 -translate-y-1/2 w-16 h-16 rounded-full bg-[var(--color-accent)] flex items-center justify-center shadow-xl pointer-events-none"
             >
-              <Heart size={40} className="text-white" fill="white" />
+              <Heart size={32} className="text-white" fill="white" />
             </motion.div>
 
-            {/* Pass indicator */}
+            {/* Swipe feedback - Pass */}
             <motion.div
-              style={{ opacity: passOpacity, scale: passScale }}
-              className="absolute top-1/2 left-8 -translate-y-1/2 w-20 h-20 rounded-full bg-white/90 flex items-center justify-center shadow-2xl"
+              style={{ opacity: passOpacity }}
+              className="absolute top-1/2 left-6 -translate-y-1/2 w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-xl pointer-events-none"
             >
-              <X size={40} className="text-gray-400" />
+              <X size={32} className="text-gray-400" />
             </motion.div>
           </>
         )}
 
-        {/* Top area - Category badge */}
-        <div className="absolute top-6 left-6 right-6 flex items-start justify-between">
+        {/* Category badge */}
+        <div className="absolute top-5 left-5 pointer-events-none">
           <span
-            className="px-4 py-2 rounded-full text-sm font-bold text-white backdrop-blur-md"
-            style={{ backgroundColor: `${categoryColor}CC` }}
+            className="px-3 py-1.5 rounded-full text-xs font-bold text-white backdrop-blur-sm"
+            style={{ backgroundColor: `${categoryColor}dd` }}
           >
             {asset.category}
           </span>
         </div>
 
-        {/* Bottom area - Magazine cover style text */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 pb-8">
-          <h2 className="text-2xl font-black text-white leading-tight tracking-tight mb-2 drop-shadow-lg">
+        {/* Bottom text - Magazine style */}
+        <div className="absolute bottom-0 left-0 right-0 p-5 pointer-events-none">
+          <h2 className="text-xl font-bold text-white leading-tight mb-1.5">
             {asset.name}
           </h2>
-          <p className="text-white/80 text-sm font-medium line-clamp-2 drop-shadow-md">
+          <p className="text-white/70 text-sm line-clamp-2">
             {asset.shortDescription}
           </p>
         </div>
@@ -136,38 +163,37 @@ export function SwipeStack({ assets }: SwipeStackProps) {
     if (direction === 'right' && assets[currentIndex]) {
       toggleLike(assets[currentIndex].id);
     }
-    setTimeout(() => {
-      setCurrentIndex(prev => prev + 1);
-    }, 300);
+    // Faster card switch
+    setCurrentIndex(prev => prev + 1);
   };
 
   const resetStack = () => {
     setCurrentIndex(0);
   };
 
-  const visibleCards = assets.slice(currentIndex, currentIndex + 3);
+  const visibleCards = assets.slice(currentIndex, currentIndex + 2).reverse();
 
   // End state
   if (currentIndex >= assets.length) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center px-8">
-        <div className="w-20 h-20 rounded-full bg-[var(--color-accent)]/10 flex items-center justify-center mb-6">
-          <Check className="w-10 h-10 text-[var(--color-accent)]" />
+        <div className="w-16 h-16 rounded-full bg-[var(--color-accent)]/10 flex items-center justify-center mb-5">
+          <Check className="w-8 h-8 text-[var(--color-accent)]" />
         </div>
-        <h3 className="text-2xl font-bold text-[var(--color-text)] mb-3">
-          {locale === 'ja' ? 'すべてチェック完了' : 'All Done'}
+        <h3 className="text-xl font-bold text-white mb-2">
+          {locale === 'ja' ? '完了' : 'Done'}
         </h3>
-        <p className="text-[var(--color-text-secondary)] text-sm mb-8 max-w-[260px]">
+        <p className="text-white/60 text-sm mb-6 max-w-[240px]">
           {locale === 'ja'
-            ? 'マーケットプレイスでお気に入りを確認できます'
-            : 'Check your favorites in the Marketplace'}
+            ? 'マーケットでお気に入りを確認'
+            : 'Check favorites in Marketplace'}
         </p>
         <button
           onClick={resetStack}
-          className="flex items-center gap-2 px-6 py-3 bg-[var(--color-primary)] text-white rounded-full font-semibold hover:opacity-90 transition-opacity"
+          className="flex items-center gap-2 px-5 py-2.5 bg-white text-[var(--color-primary)] rounded-full font-semibold text-sm"
         >
-          <RefreshCw size={18} />
-          <span>{locale === 'ja' ? '最初から' : 'Start Over'}</span>
+          <RefreshCw size={16} />
+          <span>{locale === 'ja' ? '最初から' : 'Restart'}</span>
         </button>
       </div>
     );
@@ -176,33 +202,36 @@ export function SwipeStack({ assets }: SwipeStackProps) {
   return (
     <div className="relative h-full w-full">
       {/* Card Stack */}
-      <div className="absolute inset-0">
-        <AnimatePresence>
+      <div className="absolute inset-4">
+        <AnimatePresence mode="popLayout">
           {visibleCards.map((asset, index) => (
             <SwipeCard
               key={asset.id}
               asset={asset}
               onSwipe={handleSwipe}
-              isTop={index === 0}
+              isTop={index === visibleCards.length - 1}
             />
           ))}
         </AnimatePresence>
       </div>
 
-      {/* Progress bar - minimal */}
-      <div className="absolute bottom-4 left-6 right-6 flex gap-1">
-        {assets.map((_, index) => (
+      {/* Progress - simple dots at bottom */}
+      <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
+        {assets.slice(0, Math.min(assets.length, 10)).map((_, index) => (
           <div
             key={index}
-            className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+            className={`w-1.5 h-1.5 rounded-full transition-all ${
               index < currentIndex
-                ? 'bg-white/60'
+                ? 'bg-white/40'
                 : index === currentIndex
                 ? 'bg-white'
                 : 'bg-white/20'
             }`}
           />
         ))}
+        {assets.length > 10 && (
+          <span className="text-white/40 text-xs ml-1">+{assets.length - 10}</span>
+        )}
       </div>
     </div>
   );

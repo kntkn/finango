@@ -11,28 +11,33 @@
  */
 
 :root {
-  /* Primary Brand Colors - Deep, trustworthy tones */
-  --color-primary: #0f172a;
-  --color-primary-light: #1e293b;
+  /*
+   * FINANGO Color System: White + Navy + Accent
+   * Clean 3-color scheme for professional fintech aesthetic
+   */
 
-  /* Accent - Refined gold for premium feel */
-  --color-accent: #b8860b;
-  --color-accent-light: #d4a84b;
-  --color-accent-bg: rgba(184, 134, 11, 0.06);
+  /* Primary - Deep Navy */
+  --color-primary: #0f172a;
+  --color-primary-light: #1e3a5f;
+
+  /* Accent - Sky Blue (clean, modern) */
+  --color-accent: #0ea5e9;
+  --color-accent-light: #38bdf8;
+  --color-accent-bg: rgba(14, 165, 233, 0.08);
 
   /* Success/Positive */
-  --color-success: #059669;
-  --color-success-bg: rgba(5, 150, 105, 0.08);
+  --color-success: #10b981;
+  --color-success-bg: rgba(16, 185, 129, 0.08);
 
   /* Warning */
-  --color-warning: #d97706;
-  --color-warning-bg: rgba(217, 119, 6, 0.08);
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245, 158, 11, 0.08);
 
   /* Error/Negative */
-  --color-error: #dc2626;
-  --color-error-bg: rgba(220, 38, 38, 0.08);
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.08);
 
-  /* Neutral Palette - Clean, sophisticated grays */
+  /* Neutral Palette - Clean whites and grays */
   --color-bg: #f8fafc;
   --color-surface: #ffffff;
   --color-surface-elevated: #ffffff;
@@ -50,12 +55,12 @@
   --color-ai-border: #e2e8f0;
   --color-ai-text: #334155;
 
-  /* Category Colors - Muted, professional */
-  --color-carbon: #059669;
-  --color-whisky: #b45309;
-  --color-regional: #4f46e5;
-  --color-energy: #7c3aed;
-  --color-culture: #be185d;
+  /* Category Colors - Navy-based with accent variations */
+  --color-carbon: #10b981;
+  --color-whisky: #f59e0b;
+  --color-regional: #0ea5e9;
+  --color-energy: #6366f1;
+  --color-culture: #ec4899;
 
   /* Shadows - Refined, subtle */
   --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);

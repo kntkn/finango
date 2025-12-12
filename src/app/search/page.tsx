@@ -82,7 +82,10 @@ export default function MarketplacePage() {
           <div className="max-w-6xl mx-auto">
             {/* Top Row */}
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
+              {/* Mobile: Show Finango logo */}
+              <h1 className="md:hidden text-xl font-black text-[var(--color-primary)]">finango</h1>
+              {/* Desktop: Show full header */}
+              <div className="hidden md:flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[var(--color-accent)] flex items-center justify-center">
                   <ShoppingBag size={20} className="text-white" />
                 </div>

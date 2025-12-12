@@ -90,7 +90,10 @@ export default function SecondaryMarketPage({ params }: MarketPageProps) {
             >
               <ChevronLeft size={18} />
             </Link>
-            <div>
+            {/* Mobile: Show Finango logo */}
+            <h1 className="md:hidden text-xl font-black text-[var(--color-primary)]">finango</h1>
+            {/* Desktop: Show page title */}
+            <div className="hidden md:block">
               <h1 className="text-base font-bold flex items-center gap-2 text-[var(--color-text)]">
                 <Store size={18} className="text-emerald-600" />
                 <span>{locale === 'ja' ? '二次流通マーケット' : 'Secondary Market'}</span>

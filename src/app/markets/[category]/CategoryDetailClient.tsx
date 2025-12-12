@@ -31,7 +31,10 @@ export default function CategoryDetailClient({ category, assets }: CategoryDetai
             >
               <ChevronLeft size={20} />
             </Link>
-            <div>
+            {/* Mobile: Show Finango logo */}
+            <h1 className="md:hidden text-xl font-black text-[var(--color-primary)]">finango</h1>
+            {/* Desktop: Show category */}
+            <div className="hidden md:block">
               <h1 className="text-lg font-semibold flex items-center gap-2">
                 <CategoryIcon icon={category.icon} size={20} color={category.color} />
                 <span>{locale === 'ja' ? category.nameJa : category.name}</span>

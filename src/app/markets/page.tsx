@@ -17,7 +17,10 @@ export default function MarketsPage() {
       {/* Header */}
       <header className="sticky top-0 z-40 glass px-4 py-3 md:px-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          {/* Mobile: Show Finango logo */}
+          <h1 className="md:hidden text-xl font-black text-[var(--color-primary)]">finango</h1>
+          {/* Desktop: Show page title */}
+          <div className="hidden md:flex items-center gap-2">
             <LayoutGrid size={20} className="text-[var(--color-accent)]" />
             <h1 className="text-xl font-bold">{t('markets.title')}</h1>
           </div>

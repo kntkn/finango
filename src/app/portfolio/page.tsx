@@ -76,7 +76,10 @@ export default function PortfolioPage() {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-[var(--color-surface)]/95 backdrop-blur-sm border-b border-[var(--color-border)] px-4 py-3 md:px-8">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          {/* Mobile: Show Finango logo */}
+          <h1 className="md:hidden text-xl font-black text-[var(--color-primary)]">finango</h1>
+          {/* Desktop: Show page title */}
+          <div className="hidden md:flex items-center gap-2">
             <Briefcase size={20} className="text-[var(--color-accent)]" />
             <h1 className="text-lg font-bold text-[var(--color-text)]">{t('portfolio.title')}</h1>
           </div>
@@ -95,32 +98,40 @@ export default function PortfolioPage() {
         <div className="max-w-4xl mx-auto">
           {portfolioData.items.length > 0 ? (
             <>
-              {/* Portfolio Summary */}
-              <div className="md:grid md:grid-cols-2 md:gap-6 mb-8">
-                {/* Chart */}
-                <div className="mb-6 md:mb-0">
-                  <h2 className="text-base font-semibold mb-3 text-[var(--color-text)]">{t('portfolio.holdings')}</h2>
-                  <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-5">
-                    <PortfolioChart
-                      data={portfolioData.chartData}
-                      total={portfolioData.total}
-                    />
+              {/* Total Value - Hero Section (Mobile First) */}
+              <div className="mb-6">
+                <div className="bg-gradient-to-br from-[var(--color-primary)] to-[#1e3a5f] rounded-2xl p-6 text-white">
+                  <p className="text-sm font-medium opacity-80 mb-1">
+                    {locale === 'ja' ? '総資産額' : 'Total Portfolio Value'}
+                  </p>
+                  <p className="text-4xl font-bold tracking-tight">
+                    {formatCurrency(portfolioData.total)}
+                  </p>
+                  <div className="flex items-center gap-4 mt-4 pt-4 border-t border-white/20">
+                    <div>
+                      <p className="text-xs opacity-70">{locale === 'ja' ? '保有銘柄' : 'Holdings'}</p>
+                      <p className="text-lg font-semibold">{portfolioData.items.length}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs opacity-70">{locale === 'ja' ? 'カテゴリ' : 'Categories'}</p>
+                      <p className="text-lg font-semibold">{portfolioData.uniqueCategories.length}</p>
+                    </div>
+                    <div className="ml-auto flex items-center gap-1 text-emerald-300">
+                      <TrendingUp size={16} />
+                      <span className="text-sm font-semibold">+12.5%</span>
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Total Value */}
-                <div>
-                  <h2 className="text-base font-semibold mb-3 text-[var(--color-text)]">
-                    {locale === 'ja' ? '総資産額' : 'Total Value'}
-                  </h2>
-                  <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-5">
-                    <p className="text-3xl font-bold text-[var(--color-accent)]">
-                      {formatCurrency(portfolioData.total)}
-                    </p>
-                    <p className="text-sm text-[var(--color-text-muted)] mt-1">
-                      {portfolioData.items.length} {locale === 'ja' ? '銘柄' : 'assets'}
-                    </p>
-                  </div>
+              {/* Portfolio Chart */}
+              <div className="mb-8">
+                <h2 className="text-base font-semibold mb-3 text-[var(--color-text)]">{t('portfolio.holdings')}</h2>
+                <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-5">
+                  <PortfolioChart
+                    data={portfolioData.chartData}
+                    total={portfolioData.total}
+                  />
                 </div>
               </div>
 
