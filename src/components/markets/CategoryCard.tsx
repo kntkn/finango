@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Category } from '@/data/assets';
 import { useI18n } from '@/lib/i18n';
 import { ChevronRight } from 'lucide-react';
+import CategoryIcon from '@/components/ui/CategoryIcon';
 
 interface CategoryCardProps {
   category: Category;
@@ -23,10 +24,10 @@ export default function CategoryCard({ category, index }: CategoryCardProps) {
         <div className="flex items-center gap-4">
           {/* Icon */}
           <div
-            className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl"
+            className="w-14 h-14 rounded-xl flex items-center justify-center"
             style={{ backgroundColor: `${category.color}15` }}
           >
-            {category.icon}
+            <CategoryIcon icon={category.icon} size={24} color={category.color} />
           </div>
 
           {/* Content */}

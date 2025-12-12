@@ -5,6 +5,7 @@ import { Category, Asset } from '@/data/assets';
 import { useI18n } from '@/lib/i18n';
 import AssetCard from '@/components/markets/AssetCard';
 import { ChevronLeft, Globe } from 'lucide-react';
+import CategoryIcon from '@/components/ui/CategoryIcon';
 
 interface CategoryDetailClientProps {
   category: Category;
@@ -32,7 +33,7 @@ export default function CategoryDetailClient({ category, assets }: CategoryDetai
             </Link>
             <div>
               <h1 className="text-lg font-semibold flex items-center gap-2">
-                <span>{category.icon}</span>
+                <CategoryIcon icon={category.icon} size={20} color={category.color} />
                 <span>{locale === 'ja' ? category.nameJa : category.name}</span>
               </h1>
               <p className="text-xs text-[var(--color-text-muted)]">

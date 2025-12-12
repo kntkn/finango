@@ -37,7 +37,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <ClientProviders>
-          <main className="min-h-screen pb-20 md:pb-0 md:pl-20">
+          <main className="min-h-screen pb-20 md:pb-0 md:pl-64">
             {children}
           </main>
           <BottomNav />

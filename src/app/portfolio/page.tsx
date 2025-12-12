@@ -7,6 +7,7 @@ import { mockPortfolio, getAssetById, getCategoryById, categories } from '@/data
 import { useI18n } from '@/lib/i18n';
 import PortfolioChart from '@/components/portfolio/PortfolioChart';
 import { ChevronRight, ExternalLink, Globe, Briefcase, Store, TrendingUp } from 'lucide-react';
+import CategoryIcon from '@/components/ui/CategoryIcon';
 
 export default function PortfolioPage() {
   const { t, locale, setLocale } = useI18n();
@@ -71,7 +72,7 @@ export default function PortfolioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] pb-24 md:pb-8 md:pl-20">
+    <div className="min-h-screen bg-[var(--color-bg)] pb-24 md:pb-8">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-[var(--color-surface)]/95 backdrop-blur-sm border-b border-[var(--color-border)] px-4 py-3 md:px-8">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -140,7 +141,12 @@ export default function PortfolioPage() {
                           href={`/market/${categoryId}`}
                           className="flex items-center gap-3 p-4 bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)]/30 hover:shadow-md transition-all group"
                         >
-                          <span className="text-2xl">{category.icon}</span>
+                          <div
+                            className="w-10 h-10 rounded-lg flex items-center justify-center"
+                            style={{ backgroundColor: `${category.color}15` }}
+                          >
+                            <CategoryIcon icon={category.icon} size={20} color={category.color} />
+                          </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors truncate">
                               {locale === 'ja' ? category.nameJa : category.name}

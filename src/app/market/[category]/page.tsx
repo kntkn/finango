@@ -7,6 +7,7 @@ import { useI18n } from '@/lib/i18n';
 import { useLikes } from '@/lib/likes';
 import { getAssetsByCategory, getCategoryById, categories } from '@/data/assets';
 import { ChevronLeft, Globe, Heart, Store, TrendingUp, TrendingDown, ExternalLink, Filter } from 'lucide-react';
+import CategoryIcon from '@/components/ui/CategoryIcon';
 
 interface MarketPageProps {
   params: Promise<{ category: string }>;
@@ -78,7 +79,7 @@ export default function SecondaryMarketPage({ params }: MarketPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] pb-24 md:pb-8 md:pl-20">
+    <div className="min-h-screen bg-[var(--color-bg)] pb-24 md:pb-8">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-[var(--color-surface)]/95 backdrop-blur-sm border-b border-[var(--color-border)] px-4 py-3 md:px-8">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -94,8 +95,8 @@ export default function SecondaryMarketPage({ params }: MarketPageProps) {
                 <Store size={18} className="text-emerald-600" />
                 <span>{locale === 'ja' ? '二次流通マーケット' : 'Secondary Market'}</span>
               </h1>
-              <p className="text-xs text-[var(--color-text-muted)] flex items-center gap-1">
-                <span>{category.icon}</span>
+              <p className="text-xs text-[var(--color-text-muted)] flex items-center gap-1.5">
+                <CategoryIcon icon={category.icon} size={14} color={category.color} />
                 <span>{locale === 'ja' ? category.nameJa : category.name}</span>
               </p>
             </div>
@@ -115,8 +116,13 @@ export default function SecondaryMarketPage({ params }: MarketPageProps) {
           {/* Market Overview */}
           <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-5 mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold flex items-center gap-2 text-[var(--color-text)]">
-                <span className="text-2xl">{category.icon}</span>
+              <h2 className="text-lg font-bold flex items-center gap-3 text-[var(--color-text)]">
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: `${category.color}15` }}
+                >
+                  <CategoryIcon icon={category.icon} size={20} color={category.color} />
+                </div>
                 <span>{locale === 'ja' ? category.nameJa : category.name}</span>
               </h2>
               <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
