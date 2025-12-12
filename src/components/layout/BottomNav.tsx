@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Compass, Heart, Briefcase, Globe } from 'lucide-react';
+import { Home, Search, Briefcase, Globe } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useLikes } from '@/lib/likes';
 
@@ -13,8 +13,7 @@ export default function BottomNav() {
 
   const navItems = [
     { href: '/', icon: Home, label: t('nav.home') },
-    { href: '/discover', icon: Compass, label: t('nav.discover') },
-    { href: '/likes', icon: Heart, label: t('nav.likes'), badge: likes.length },
+    { href: '/search', icon: Search, label: locale === 'ja' ? '探す' : 'Search', badge: likes.length > 0 ? likes.length : undefined },
     { href: '/portfolio', icon: Briefcase, label: t('nav.portfolio') },
   ];
 
@@ -25,8 +24,8 @@ export default function BottomNav() {
   return (
     <>
       {/* Mobile Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden glass safe-bottom">
-        <div className="flex items-center justify-around px-2 py-2">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[var(--color-surface)]/95 backdrop-blur-sm border-t border-[var(--color-border)] safe-bottom">
+        <div className="flex items-center justify-around px-4 py-2">
           {navItems.map((item) => {
             const isActive =
               item.href === '/'
@@ -39,9 +38,9 @@ export default function BottomNav() {
                 href={item.href}
                 className={`
                   relative flex flex-col items-center justify-center
-                  w-16 h-14 rounded-2xl transition-all duration-200
+                  flex-1 h-14 rounded-xl transition-all duration-200
                   ${isActive
-                    ? 'text-[var(--color-accent)]'
+                    ? 'text-[var(--color-primary)]'
                     : 'text-[var(--color-text-muted)]'
                   }
                 `}
@@ -50,15 +49,14 @@ export default function BottomNav() {
                   <item.icon
                     size={22}
                     strokeWidth={isActive ? 2.5 : 1.8}
-                    fill={isActive && item.href === '/likes' ? 'currentColor' : 'none'}
                   />
                   {item.badge && item.badge > 0 && (
-                    <span className="absolute -top-1 -right-2 w-4 h-4 bg-[var(--color-accent)] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                      {item.badge > 9 ? '9+' : item.badge}
+                    <span className="absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 bg-[var(--color-accent)] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {item.badge > 99 ? '99+' : item.badge}
                     </span>
                   )}
                 </div>
-                <span className={`text-[10px] mt-1 ${isActive ? 'font-medium' : ''}`}>
+                <span className={`text-[10px] mt-1 ${isActive ? 'font-semibold' : 'font-medium'}`}>
                   {item.label}
                 </span>
               </Link>
@@ -68,10 +66,10 @@ export default function BottomNav() {
       </nav>
 
       {/* Desktop Side Nav */}
-      <nav className="hidden md:flex fixed left-0 top-0 bottom-0 w-20 flex-col items-center py-6 bg-white border-r border-[var(--color-border)] z-50">
+      <nav className="hidden md:flex fixed left-0 top-0 bottom-0 w-20 flex-col items-center py-6 bg-[var(--color-surface)] border-r border-[var(--color-border)] z-50">
         {/* Logo */}
         <Link href="/" className="mb-8">
-          <div className="w-10 h-10 rounded-xl gradient-accent flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)] flex items-center justify-center">
             <span className="text-white font-bold text-lg">F</span>
           </div>
         </Link>
@@ -90,7 +88,7 @@ export default function BottomNav() {
                 href={item.href}
                 className={`
                   relative flex flex-col items-center justify-center
-                  w-14 h-14 rounded-2xl transition-all duration-200
+                  w-14 h-14 rounded-xl transition-all duration-200
                   ${isActive
                     ? 'bg-[var(--color-accent-bg)] text-[var(--color-accent)]'
                     : 'text-[var(--color-text-muted)] hover:bg-[var(--color-border)] hover:text-[var(--color-text-secondary)]'
@@ -102,11 +100,10 @@ export default function BottomNav() {
                   <item.icon
                     size={22}
                     strokeWidth={isActive ? 2.5 : 1.8}
-                    fill={isActive && item.href === '/likes' ? 'currentColor' : 'none'}
                   />
                   {item.badge && item.badge > 0 && (
-                    <span className="absolute -top-1 -right-2 w-4 h-4 bg-[var(--color-accent)] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                      {item.badge > 9 ? '9+' : item.badge}
+                    <span className="absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 bg-[var(--color-accent)] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {item.badge > 99 ? '99+' : item.badge}
                     </span>
                   )}
                 </div>
@@ -118,7 +115,7 @@ export default function BottomNav() {
         {/* Language Toggle */}
         <button
           onClick={toggleLocale}
-          className="w-14 h-14 rounded-2xl flex flex-col items-center justify-center text-[var(--color-text-muted)] hover:bg-[var(--color-border)] hover:text-[var(--color-text-secondary)] transition-all duration-200"
+          className="w-14 h-14 rounded-xl flex flex-col items-center justify-center text-[var(--color-text-muted)] hover:bg-[var(--color-border)] hover:text-[var(--color-text-secondary)] transition-all duration-200"
           title={locale === 'en' ? '日本語に切り替え' : 'Switch to English'}
         >
           <Globe size={20} strokeWidth={1.8} />

@@ -7,6 +7,7 @@ import { useLikes } from '@/lib/likes';
 import { assets, categories } from '@/data/assets';
 import { ArrowRight, Heart, Sparkles, TrendingUp, Globe } from 'lucide-react';
 import { useState } from 'react';
+import { SwipeStack } from '@/components/home/SwipeCard';
 
 export default function Home() {
   const { t, locale, setLocale } = useI18n();
@@ -15,6 +16,7 @@ export default function Home() {
 
   const featuredAssets = assets.slice(0, 4);
   const trendingAssets = assets.slice(4, 8);
+  const allAssets = assets;
 
   const handleLike = (e: React.MouseEvent, assetId: string) => {
     e.preventDefault();
@@ -29,11 +31,11 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen gradient-hero">
+    <div className="min-h-screen bg-[var(--color-bg)]">
       {/* Header */}
-      <header className="sticky top-0 z-40 glass px-4 py-3 md:px-8">
+      <header className="sticky top-0 z-40 bg-[var(--color-surface)]/95 backdrop-blur-sm border-b border-[var(--color-border)] px-4 py-3 md:px-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-bold gradient-text">finango</h1>
+          <h1 className="text-xl font-bold text-[var(--color-primary)]">finango</h1>
           <button
             onClick={toggleLocale}
             className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-border)] text-sm font-medium"
@@ -44,157 +46,201 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="px-4 pt-8 pb-6 md:px-8 md:pt-16 md:pb-12">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-5xl font-bold leading-tight md:leading-tight whitespace-pre-line">
+      {/* Mobile: Swipe Experience */}
+      <div className="md:hidden">
+        {/* Hero - Compact for mobile swipe */}
+        <section className="px-4 pt-6 pb-4">
+          <h2 className="text-2xl font-bold leading-tight text-[var(--color-text)]">
             {t('home.title')}
           </h2>
-          <p className="mt-3 text-[var(--color-text-secondary)] text-base md:text-lg max-w-md">
-            {t('home.subtitle')}
+          <p className="mt-2 text-[var(--color-text-secondary)] text-sm">
+            {locale === 'ja'
+              ? 'スワイプして気になる銘柄を探そう'
+              : 'Swipe to discover assets you like'}
           </p>
-          <Link
-            href="/discover"
-            className="inline-flex items-center gap-2 mt-6 btn-primary"
-          >
-            <Sparkles size={18} />
-            <span>{t('nav.discover')}</span>
-          </Link>
-        </div>
-      </section>
+        </section>
 
-      {/* Categories */}
-      <section className="px-4 py-6 md:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="scroll-container pb-2">
-            {categories.map((cat, i) => (
+        {/* Category Pills */}
+        <section className="px-4 pb-4">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {categories.map((cat) => (
               <Link
                 key={cat.id}
                 href={`/markets/${cat.id}`}
-                className={`scroll-item chip card-interactive animate-slide-up opacity-0 stagger-${i + 1}`}
-                style={{ animationFillMode: 'forwards' }}
+                className="flex-shrink-0 px-3 py-1.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] text-sm font-medium text-[var(--color-text-secondary)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
               >
-                <span>{cat.icon}</span>
+                <span className="mr-1">{cat.icon}</span>
                 <span>{locale === 'ja' ? cat.nameJa : cat.name}</span>
               </Link>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Featured Section */}
-      <section className="px-4 py-6 md:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Sparkles size={18} className="text-[var(--color-accent)]" />
-              {t('home.featured')}
-            </h3>
+        {/* Swipe Stack */}
+        <section className="px-4 pb-8">
+          <SwipeStack assets={allAssets} />
+        </section>
+      </div>
+
+      {/* Desktop: Grid Experience */}
+      <div className="hidden md:block">
+        {/* Hero Section */}
+        <section className="px-8 pt-12 pb-8">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-4xl lg:text-5xl font-bold leading-tight text-[var(--color-text)]">
+              {t('home.title')}
+            </h2>
+            <p className="mt-4 text-[var(--color-text-secondary)] text-lg max-w-lg">
+              {t('home.subtitle')}
+            </p>
             <Link
-              href="/discover"
-              className="text-sm text-[var(--color-accent)] font-medium flex items-center gap-1"
+              href="/search"
+              className="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
             >
-              {t('home.viewAll')}
-              <ArrowRight size={14} />
+              <Sparkles size={18} />
+              <span>{locale === 'ja' ? '銘柄を探す' : 'Explore Assets'}</span>
             </Link>
           </div>
+        </section>
 
-          {/* Mobile: Horizontal Scroll, PC: Grid */}
-          <div className="scroll-container md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-4 md:overflow-visible">
-            {featuredAssets.map((asset, i) => (
+        {/* Categories */}
+        <section className="px-8 py-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {categories.map((cat, i) => (
+                <Link
+                  key={cat.id}
+                  href={`/markets/${cat.id}`}
+                  className="flex-shrink-0 px-4 py-2 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] text-sm font-medium hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-all hover:shadow-sm"
+                >
+                  <span className="mr-1.5">{cat.icon}</span>
+                  <span>{locale === 'ja' ? cat.nameJa : cat.name}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Featured Section */}
+        <section className="px-8 py-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold flex items-center gap-2 text-[var(--color-text)]">
+                <Sparkles size={20} className="text-[var(--color-accent)]" />
+                {t('home.featured')}
+              </h3>
               <Link
-                key={asset.id}
-                href={`/asset/${asset.id}`}
-                className={`scroll-item w-[280px] md:w-auto card card-interactive animate-scale-in opacity-0 overflow-hidden`}
-                style={{ animationDelay: `${i * 0.1}s`, animationFillMode: 'forwards' }}
+                href="/search"
+                className="text-sm text-[var(--color-accent)] font-medium flex items-center gap-1 hover:underline"
               >
-                <div className="relative aspect-[4/3]">
-                  <Image
-                    src={asset.image}
-                    alt={asset.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 280px, 25vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-
-                  {/* Like Button */}
-                  <button
-                    onClick={(e) => handleLike(e, asset.id)}
-                    className={`absolute top-3 right-3 like-btn ${isLiked(asset.id) ? 'liked' : ''} ${likeAnimation === asset.id ? 'animate-heart-pop' : ''}`}
-                  >
-                    <Heart size={18} fill={isLiked(asset.id) ? 'currentColor' : 'none'} />
-                  </button>
-
-                  {/* Category */}
-                  <span className="absolute bottom-3 left-3 chip chip-accent text-xs">
-                    {asset.category}
-                  </span>
-                </div>
-                <div className="p-4">
-                  <h4 className="font-semibold text-sm line-clamp-1">{asset.name}</h4>
-                  <p className="text-xs text-[var(--color-text-muted)] mt-1 line-clamp-2">
-                    {asset.shortDescription}
-                  </p>
-                </div>
+                {t('home.viewAll')}
+                <ArrowRight size={14} />
               </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+            </div>
 
-      {/* Trending Section */}
-      <section className="px-4 py-6 pb-8 md:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <TrendingUp size={18} className="text-[var(--color-secondary)]" />
-              {t('home.trending')}
-            </h3>
-            <Link
-              href="/markets"
-              className="text-sm text-[var(--color-accent)] font-medium flex items-center gap-1"
-            >
-              {t('home.viewAll')}
-              <ArrowRight size={14} />
-            </Link>
-          </div>
+            {/* Grid Layout */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+              {featuredAssets.map((asset, i) => (
+                <Link
+                  key={asset.id}
+                  href={`/asset/${asset.id}`}
+                  className="group bg-[var(--color-surface)] rounded-xl overflow-hidden border border-[var(--color-border)] hover:border-[var(--color-accent)]/30 hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="relative aspect-[4/3]">
+                    <Image
+                      src={asset.image}
+                      alt={asset.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 1024px) 50vw, 25vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-          <div className="scroll-container md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-4 md:overflow-visible">
-            {trendingAssets.map((asset, i) => (
-              <Link
-                key={asset.id}
-                href={`/asset/${asset.id}`}
-                className={`scroll-item w-[200px] md:w-auto card card-interactive animate-scale-in opacity-0 overflow-hidden`}
-                style={{ animationDelay: `${i * 0.1 + 0.2}s`, animationFillMode: 'forwards' }}
-              >
-                <div className="relative aspect-square">
-                  <Image
-                    src={asset.image}
-                    alt={asset.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 200px, 25vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    {/* Like Button */}
+                    <button
+                      onClick={(e) => handleLike(e, asset.id)}
+                      className={`absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center transition-all hover:scale-110 ${
+                        isLiked(asset.id) ? 'text-rose-500' : 'text-[var(--color-text-muted)]'
+                      } ${likeAnimation === asset.id ? 'animate-heart-pop' : ''}`}
+                    >
+                      <Heart size={16} fill={isLiked(asset.id) ? 'currentColor' : 'none'} />
+                    </button>
 
-                  {/* Like Button */}
-                  <button
-                    onClick={(e) => handleLike(e, asset.id)}
-                    className={`absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center transition-all ${isLiked(asset.id) ? 'text-red-500' : 'text-[var(--color-text-muted)]'} ${likeAnimation === asset.id ? 'animate-heart-pop' : ''}`}
-                  >
-                    <Heart size={14} fill={isLiked(asset.id) ? 'currentColor' : 'none'} />
-                  </button>
-
-                  <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <h4 className="font-semibold text-white text-sm line-clamp-2">{asset.name}</h4>
+                    {/* Category */}
+                    <span className="absolute bottom-3 left-3 px-2.5 py-1 bg-[var(--color-accent)] text-white rounded-full text-xs font-semibold">
+                      {asset.category}
+                    </span>
                   </div>
-                </div>
-              </Link>
-            ))}
+                  <div className="p-4">
+                    <h4 className="font-semibold text-[var(--color-text)] line-clamp-1 group-hover:text-[var(--color-accent)] transition-colors">
+                      {asset.name}
+                    </h4>
+                    <p className="text-xs text-[var(--color-text-muted)] mt-1.5 line-clamp-2">
+                      {asset.shortDescription}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Trending Section */}
+        <section className="px-8 py-8 pb-12">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold flex items-center gap-2 text-[var(--color-text)]">
+                <TrendingUp size={20} className="text-emerald-600" />
+                {t('home.trending')}
+              </h3>
+              <Link
+                href="/markets"
+                className="text-sm text-[var(--color-accent)] font-medium flex items-center gap-1 hover:underline"
+              >
+                {t('home.viewAll')}
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+              {trendingAssets.map((asset, i) => (
+                <Link
+                  key={asset.id}
+                  href={`/asset/${asset.id}`}
+                  className="group bg-[var(--color-surface)] rounded-xl overflow-hidden border border-[var(--color-border)] hover:border-[var(--color-accent)]/30 hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="relative aspect-square">
+                    <Image
+                      src={asset.image}
+                      alt={asset.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 1024px) 50vw, 25vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+
+                    {/* Like Button */}
+                    <button
+                      onClick={(e) => handleLike(e, asset.id)}
+                      className={`absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center transition-all hover:scale-110 ${
+                        isLiked(asset.id) ? 'text-rose-500' : 'text-[var(--color-text-muted)]'
+                      } ${likeAnimation === asset.id ? 'animate-heart-pop' : ''}`}
+                    >
+                      <Heart size={14} fill={isLiked(asset.id) ? 'currentColor' : 'none'} />
+                    </button>
+
+                    <div className="absolute bottom-0 left-0 right-0 p-3">
+                      <h4 className="font-semibold text-white text-sm line-clamp-2 group-hover:text-[var(--color-accent-light)] transition-colors">
+                        {asset.name}
+                      </h4>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

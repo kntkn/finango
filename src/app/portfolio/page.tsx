@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { mockPortfolio, getAssetById, getCategoryById, categories } from '@/data/assets';
 import { useI18n } from '@/lib/i18n';
 import PortfolioChart from '@/components/portfolio/PortfolioChart';
-import { ChevronRight, ExternalLink, Globe, Briefcase } from 'lucide-react';
+import { ChevronRight, ExternalLink, Globe, Briefcase, Store, TrendingUp } from 'lucide-react';
 
 export default function PortfolioPage() {
   const { t, locale, setLocale } = useI18n();
@@ -44,7 +44,10 @@ export default function PortfolioPage() {
 
     const total = items.reduce((sum, item) => sum + item.amount, 0);
 
-    return { items, chartData, total };
+    // Get unique categories from portfolio
+    const uniqueCategories = [...new Set(items.map(item => item.asset?.categoryId))].filter(Boolean);
+
+    return { items, chartData, total, uniqueCategories };
   }, [locale]);
 
   const formatCurrency = (value: number) => {
@@ -68,13 +71,13 @@ export default function PortfolioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="min-h-screen bg-[var(--color-bg)] pb-24 md:pb-8 md:pl-20">
       {/* Header */}
-      <header className="sticky top-0 z-40 glass px-4 py-3 md:px-8">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-[var(--color-surface)]/95 backdrop-blur-sm border-b border-[var(--color-border)] px-4 py-3 md:px-8">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Briefcase size={20} className="text-[var(--color-accent)]" />
-            <h1 className="text-xl font-bold">{t('portfolio.title')}</h1>
+            <h1 className="text-lg font-bold text-[var(--color-text)]">{t('portfolio.title')}</h1>
           </div>
           <button
             onClick={toggleLocale}
@@ -88,69 +91,134 @@ export default function PortfolioPage() {
 
       {/* Main Content */}
       <div className="px-4 py-6 md:px-8">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           {portfolioData.items.length > 0 ? (
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              {/* Left Column - Chart */}
-              <div className="mb-8 md:mb-0">
-                <h2 className="text-lg font-semibold mb-4">{t('portfolio.holdings')}</h2>
-                <div className="card p-5">
-                  <PortfolioChart
-                    data={portfolioData.chartData}
-                    total={portfolioData.total}
-                  />
+            <>
+              {/* Portfolio Summary */}
+              <div className="md:grid md:grid-cols-2 md:gap-6 mb-8">
+                {/* Chart */}
+                <div className="mb-6 md:mb-0">
+                  <h2 className="text-base font-semibold mb-3 text-[var(--color-text)]">{t('portfolio.holdings')}</h2>
+                  <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-5">
+                    <PortfolioChart
+                      data={portfolioData.chartData}
+                      total={portfolioData.total}
+                    />
+                  </div>
+                </div>
+
+                {/* Total Value */}
+                <div>
+                  <h2 className="text-base font-semibold mb-3 text-[var(--color-text)]">
+                    {locale === 'ja' ? '総資産額' : 'Total Value'}
+                  </h2>
+                  <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-5">
+                    <p className="text-3xl font-bold text-[var(--color-accent)]">
+                      {formatCurrency(portfolioData.total)}
+                    </p>
+                    <p className="text-sm text-[var(--color-text-muted)] mt-1">
+                      {portfolioData.items.length} {locale === 'ja' ? '銘柄' : 'assets'}
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Right Column - Assets & Actions */}
-              <div>
-                {/* Assets List */}
-                <div className="mb-8">
-                  <h2 className="text-lg font-semibold mb-4">{t('portfolio.assets')}</h2>
-                  <div className="space-y-3">
-                    {portfolioData.items.map((item, index) => (
+              {/* Secondary Market Access - Quick Links */}
+              {portfolioData.uniqueCategories.length > 0 && (
+                <section className="mb-8">
+                  <h2 className="text-base font-semibold mb-3 flex items-center gap-2 text-[var(--color-text)]">
+                    <Store size={18} className="text-emerald-600" />
+                    {locale === 'ja' ? '二次流通マーケット' : 'Secondary Market'}
+                  </h2>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {portfolioData.uniqueCategories.map((categoryId) => {
+                      const category = getCategoryById(categoryId as string);
+                      if (!category) return null;
+                      return (
+                        <Link
+                          key={categoryId}
+                          href={`/market/${categoryId}`}
+                          className="flex items-center gap-3 p-4 bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)]/30 hover:shadow-md transition-all group"
+                        >
+                          <span className="text-2xl">{category.icon}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors truncate">
+                              {locale === 'ja' ? category.nameJa : category.name}
+                            </p>
+                            <p className="text-xs text-[var(--color-text-muted)]">
+                              {locale === 'ja' ? '売買可能' : 'Trade available'}
+                            </p>
+                          </div>
+                          <ChevronRight size={16} className="text-[var(--color-text-muted)] flex-shrink-0" />
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
+              {/* Assets List */}
+              <section className="mb-8">
+                <h2 className="text-base font-semibold mb-3 text-[var(--color-text)]">{t('portfolio.assets')}</h2>
+                <div className="space-y-3">
+                  {portfolioData.items.map((item, index) => (
+                    <div
+                      key={item.assetId}
+                      className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] overflow-hidden"
+                    >
                       <Link
-                        key={item.assetId}
                         href={`/asset/${item.assetId}`}
-                        className="flex items-center gap-4 p-4 card card-hover animate-slide-up opacity-0"
-                        style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'forwards' }}
+                        className="flex items-center gap-4 p-4 hover:bg-[var(--color-bg)] transition-colors"
                       >
                         {/* Image */}
-                        <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                        <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
                           {item.asset && (
                             <Image
                               src={item.asset.image}
                               alt={item.asset.name}
                               fill
                               className="object-cover"
-                              sizes="64px"
+                              sizes="56px"
                             />
                           )}
                         </div>
 
                         {/* Content */}
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-sm truncate">
+                          <h3 className="font-semibold text-sm text-[var(--color-text)] truncate">
                             {item.asset?.name}
                           </h3>
                           <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
                             {locale === 'ja' ? item.category?.nameJa : item.category?.name} • {formatDate(item.purchaseDate)}
                           </p>
-                          <p className="text-sm font-semibold mt-1 text-[var(--color-accent)]">
+                          <p className="text-sm font-bold mt-1 text-[var(--color-accent)]">
                             {formatCurrency(item.amount)}
                           </p>
                         </div>
 
                         {/* Arrow */}
-                        <ChevronRight size={20} className="text-[var(--color-text-muted)] flex-shrink-0" />
+                        <ChevronRight size={18} className="text-[var(--color-text-muted)] flex-shrink-0" />
                       </Link>
-                    ))}
-                  </div>
-                </div>
 
-                {/* Sell Section */}
-                <div className="card p-5">
-                  <h3 className="font-semibold mb-2">{t('portfolio.sell')}</h3>
+                      {/* Secondary Market Button */}
+                      <div className="px-4 pb-3">
+                        <Link
+                          href={`/market/${item.asset?.categoryId}`}
+                          className="flex items-center justify-center gap-2 w-full py-2.5 bg-[var(--color-bg)] hover:bg-[var(--color-border)] rounded-lg text-sm font-medium text-[var(--color-text-secondary)] transition-colors"
+                        >
+                          <Store size={14} />
+                          <span>{locale === 'ja' ? '二次流通で売買' : 'Trade on Secondary Market'}</span>
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* External Link Section */}
+              <section>
+                <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-5">
+                  <h3 className="font-semibold text-[var(--color-text)] mb-2">{t('portfolio.sell')}</h3>
                   <p className="text-sm text-[var(--color-text-secondary)] mb-4">
                     {t('portfolio.sellNote')}
                   </p>
@@ -158,29 +226,29 @@ export default function PortfolioPage() {
                     href="https://ango.jp/portfolio"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-3 px-4 border border-[var(--color-border)] rounded-xl font-medium text-sm hover:bg-[var(--color-bg)] transition-colors"
+                    className="flex items-center justify-center gap-2 w-full py-3 px-4 border border-[var(--color-border)] rounded-lg font-medium text-sm text-[var(--color-text)] hover:bg-[var(--color-bg)] transition-colors"
                   >
                     <span>{t('portfolio.manageOnAngo')}</span>
                     <ExternalLink size={16} />
                   </a>
                 </div>
-              </div>
-            </div>
+              </section>
+            </>
           ) : (
             /* Empty State */
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-20 h-20 rounded-full bg-[var(--color-border)] flex items-center justify-center mb-6">
-                <Briefcase size={32} className="text-[var(--color-text-muted)]" />
+              <div className="w-16 h-16 rounded-full bg-[var(--color-border)] flex items-center justify-center mb-5">
+                <Briefcase size={28} className="text-[var(--color-text-muted)]" />
               </div>
-              <h2 className="text-xl font-semibold mb-2">{t('portfolio.empty')}</h2>
-              <p className="text-[var(--color-text-muted)] text-center max-w-xs mb-6">
+              <h2 className="text-lg font-bold text-[var(--color-text)] mb-2">{t('portfolio.empty')}</h2>
+              <p className="text-[var(--color-text-muted)] text-center text-sm max-w-xs mb-6">
                 {t('portfolio.emptyHint')}
               </p>
               <Link
-                href="/discover"
-                className="btn-primary"
+                href="/search"
+                className="px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
               >
-                {t('nav.discover')}
+                {locale === 'ja' ? '銘柄を探す' : 'Find Assets'}
               </Link>
             </div>
           )}
