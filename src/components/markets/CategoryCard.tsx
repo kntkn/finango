@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Category } from '@/data/assets';
+import { useI18n } from '@/lib/i18n';
 import { ChevronRight } from 'lucide-react';
 
 interface CategoryCardProps {
@@ -10,14 +11,13 @@ interface CategoryCardProps {
 }
 
 export default function CategoryCard({ category, index }: CategoryCardProps) {
+  const { t, locale } = useI18n();
+
   return (
     <Link
       href={`/markets/${category.id}`}
-      className={`
-        block p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)]
-        card-hover animate-slide-up opacity-0
-      `}
-      style={{ animationDelay: `${index * 0.1}s` }}
+      className="block p-5 card card-hover animate-slide-up opacity-0"
+      style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'forwards' }}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -31,9 +31,11 @@ export default function CategoryCard({ category, index }: CategoryCardProps) {
 
           {/* Content */}
           <div>
-            <h3 className="font-semibold text-lg">{category.name}</h3>
+            <h3 className="font-semibold text-lg">
+              {locale === 'ja' ? category.nameJa : category.name}
+            </h3>
             <p className="text-sm text-[var(--color-text-muted)] mt-0.5">
-              {category.assetCount} assets
+              {category.assetCount} {t('markets.assets')}
             </p>
           </div>
         </div>
@@ -46,8 +48,8 @@ export default function CategoryCard({ category, index }: CategoryCardProps) {
       </div>
 
       {/* Description */}
-      <p className="text-sm text-[var(--color-text-secondary)] mt-3 pl-[74px]">
-        {category.description}
+      <p className="text-sm text-[var(--color-text-secondary)] mt-3 md:pl-[74px]">
+        {locale === 'ja' ? category.descriptionJa : category.description}
       </p>
     </Link>
   );

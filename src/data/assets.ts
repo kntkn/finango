@@ -28,6 +28,7 @@ export interface Category {
   icon: string;
   color: string;
   description: string;
+  descriptionJa: string;
   assetCount: number;
 }
 
@@ -39,6 +40,7 @@ export const categories: Category[] = [
     icon: '🌱',
     color: '#22c55e',
     description: 'Invest in carbon credits and environmental initiatives',
+    descriptionJa: 'カーボンクレジットと環境イニシアチブへの投資',
     assetCount: 12,
   },
   {
@@ -48,6 +50,7 @@ export const categories: Category[] = [
     icon: '🥃',
     color: '#d97706',
     description: 'Own a piece of premium aged whisky',
+    descriptionJa: 'プレミアム熟成ウイスキーのオーナーに',
     assetCount: 8,
   },
   {
@@ -57,6 +60,7 @@ export const categories: Category[] = [
     icon: '🏘️',
     color: '#3b82f6',
     description: 'Support local communities and regional development',
+    descriptionJa: '地域コミュニティと地方創生を支援',
     assetCount: 15,
   },
   {
@@ -66,6 +70,7 @@ export const categories: Category[] = [
     icon: '⚡',
     color: '#8b5cf6',
     description: 'Participate in sustainable energy projects',
+    descriptionJa: '持続可能なエネルギープロジェクトに参加',
     assetCount: 10,
   },
   {
@@ -75,6 +80,7 @@ export const categories: Category[] = [
     icon: '🎨',
     color: '#ec4899',
     description: 'Preserve and support cultural heritage',
+    descriptionJa: '文化遺産の保存と支援',
     assetCount: 6,
   },
 ];

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Asset } from '@/data/assets';
+import { useI18n } from '@/lib/i18n';
 import { Sparkles, ChevronDown, ChevronUp, Clock, TrendingUp, Droplets, Users, AlertCircle } from 'lucide-react';
 
 interface AIInsightsProps {
@@ -10,6 +11,7 @@ interface AIInsightsProps {
 
 export default function AIInsights({ asset }: AIInsightsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
+  const { t, locale } = useI18n();
   const { aiInsights } = asset;
 
   const getLiquidityIcon = (level: 'high' | 'medium' | 'low') => {
@@ -23,15 +25,48 @@ export default function AIInsights({ asset }: AIInsightsProps) {
 
   const getRiskBadge = (level: 'high' | 'medium' | 'low') => {
     const styles = {
-      high: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-      medium: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-      low: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+      high: 'bg-red-100 text-red-700',
+      medium: 'bg-amber-100 text-amber-700',
+      low: 'bg-green-100 text-green-700',
+    };
+    const labels = {
+      high: t('common.high'),
+      medium: t('common.medium'),
+      low: t('common.low'),
     };
     return (
-      <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${styles[level]}`}>
-        {level}
+      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${styles[level]}`}>
+        {labels[level]}
       </span>
     );
+  };
+
+  const getOrientationLabel = (orientation: string) => {
+    const map: Record<string, { en: string; ja: string }> = {
+      'Growth': { en: 'Growth', ja: '成長型' },
+      'Stable': { en: 'Stable', ja: '安定型' },
+      'Stable/Growth': { en: 'Stable/Growth', ja: '安定/成長' },
+      'Challenge': { en: 'Challenge', ja: '挑戦型' },
+    };
+    return map[orientation]?.[locale] || orientation;
+  };
+
+  const getProjectTypeLabel = (type: string) => {
+    const map: Record<string, { en: string; ja: string }> = {
+      'Long-term': { en: 'Long-term', ja: '長期' },
+      'Mid-term': { en: 'Mid-term', ja: '中期' },
+      'Short-term': { en: 'Short-term', ja: '短期' },
+    };
+    return map[type]?.[locale] || type;
+  };
+
+  const getLiquidityLabel = (level: string) => {
+    const map: Record<string, { en: string; ja: string }> = {
+      'high': { en: 'High', ja: '高い' },
+      'medium': { en: 'Medium', ja: '普通' },
+      'low': { en: 'Low', ja: '低い' },
+    };
+    return map[level]?.[locale] || level;
   };
 
   return (
@@ -39,11 +74,11 @@ export default function AIInsights({ asset }: AIInsightsProps) {
       {/* Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-5 py-4 flex items-center justify-between"
+        className="w-full px-5 py-4 flex items-center justify-between hover:bg-[var(--color-ai-border)]/30 transition-colors"
       >
         <div className="flex items-center gap-2">
           <Sparkles size={18} className="text-[var(--color-ai-text)]" />
-          <span className="font-medium text-[var(--color-ai-text)]">AI Insights</span>
+          <span className="font-medium text-[var(--color-ai-text)]">{t('asset.aiInsights')}</span>
         </div>
         {isExpanded ? (
           <ChevronUp size={20} className="text-[var(--color-ai-text)]" />
@@ -57,31 +92,31 @@ export default function AIInsights({ asset }: AIInsightsProps) {
         <div className="px-5 pb-5 space-y-5">
           {/* Disclaimer */}
           <p className="text-xs text-[var(--color-text-muted)] italic">
-            These insights help you think about this asset. They are not investment advice.
+            {t('ai.disclaimer')}
           </p>
 
           {/* Project Characteristics */}
           <div className="space-y-3">
             <h4 className="text-sm font-medium text-[var(--color-text-secondary)]">
-              Project Characteristics
+              {t('ai.characteristics')}
             </h4>
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-[var(--color-surface)] rounded-xl p-3 text-center">
                 <Clock size={18} className="mx-auto mb-1 text-[var(--color-text-muted)]" />
-                <p className="text-xs text-[var(--color-text-muted)]">Type</p>
-                <p className="text-sm font-medium mt-0.5">{aiInsights.projectType}</p>
+                <p className="text-xs text-[var(--color-text-muted)]">{t('ai.type')}</p>
+                <p className="text-sm font-medium mt-0.5">{getProjectTypeLabel(aiInsights.projectType)}</p>
               </div>
               <div className="bg-[var(--color-surface)] rounded-xl p-3 text-center">
                 <TrendingUp size={18} className="mx-auto mb-1 text-[var(--color-text-muted)]" />
-                <p className="text-xs text-[var(--color-text-muted)]">Style</p>
-                <p className="text-sm font-medium mt-0.5">{aiInsights.orientation}</p>
+                <p className="text-xs text-[var(--color-text-muted)]">{t('ai.style')}</p>
+                <p className="text-sm font-medium mt-0.5">{getOrientationLabel(aiInsights.orientation)}</p>
               </div>
               <div className="bg-[var(--color-surface)] rounded-xl p-3 text-center">
                 <div className="flex justify-center mb-1">
                   {getLiquidityIcon(aiInsights.liquidity)}
                 </div>
-                <p className="text-xs text-[var(--color-text-muted)]">Liquidity</p>
-                <p className="text-sm font-medium mt-0.5 capitalize">{aiInsights.liquidity}</p>
+                <p className="text-xs text-[var(--color-text-muted)]">{t('ai.liquidity')}</p>
+                <p className="text-sm font-medium mt-0.5">{getLiquidityLabel(aiInsights.liquidity)}</p>
               </div>
             </div>
           </div>
@@ -90,19 +125,19 @@ export default function AIInsights({ asset }: AIInsightsProps) {
           <div className="space-y-3">
             <h4 className="text-sm font-medium text-[var(--color-text-secondary)] flex items-center gap-2">
               <AlertCircle size={14} />
-              Risk Nature
+              {t('ai.risk')}
             </h4>
             <div className="bg-[var(--color-surface)] rounded-xl p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text-secondary)]">Market Dependency</span>
+                <span className="text-sm text-[var(--color-text-secondary)]">{t('ai.market')}</span>
                 {getRiskBadge(aiInsights.riskFactors.marketDependency)}
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text-secondary)]">Time Dependency</span>
+                <span className="text-sm text-[var(--color-text-secondary)]">{t('ai.time')}</span>
                 {getRiskBadge(aiInsights.riskFactors.timeDependency)}
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[var(--color-text-secondary)]">External Factors</span>
+                <span className="text-sm text-[var(--color-text-secondary)]">{t('ai.external')}</span>
                 {getRiskBadge(aiInsights.riskFactors.externalFactors)}
               </div>
             </div>
@@ -111,7 +146,7 @@ export default function AIInsights({ asset }: AIInsightsProps) {
           {/* Similar Projects */}
           <div className="space-y-3">
             <h4 className="text-sm font-medium text-[var(--color-text-secondary)]">
-              What We&apos;ve Observed
+              {t('ai.observed')}
             </h4>
             <div className="bg-[var(--color-surface)] rounded-xl p-4">
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
@@ -124,7 +159,7 @@ export default function AIInsights({ asset }: AIInsightsProps) {
           <div className="space-y-3">
             <h4 className="text-sm font-medium text-[var(--color-text-secondary)] flex items-center gap-2">
               <Users size={14} />
-              May Be Suitable For
+              {t('ai.suitableFor')}
             </h4>
             <div className="flex flex-wrap gap-2">
               {aiInsights.suitableFor.map((type, index) => (
