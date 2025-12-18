@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Asset, categories } from '@/data/assets';
 import { useLikes } from '@/lib/likes';
 import { useI18n } from '@/lib/i18n';
-import { Check, RefreshCw, Heart, X } from 'lucide-react';
+import { Check, RefreshCw, Heart, X, ArrowUpRight } from 'lucide-react';
 
 interface SwipeCardProps {
   asset: Asset;
@@ -24,12 +24,15 @@ export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
   const x = useMotionValue(0);
 
   // Smoother rotation and opacity transforms
-  const rotate = useTransform(x, [-150, 0, 150], [-8, 0, 8]);
-  const cardOpacity = useTransform(x, [-150, 0, 150], [0.8, 1, 0.8]);
+  const rotate = useTransform(x, [-150, 0, 150], [-6, 0, 6]);
+  const cardOpacity = useTransform(x, [-150, 0, 150], [0.85, 1, 0.85]);
+  const scale = useTransform(x, [-150, 0, 150], [0.98, 1, 0.98]);
 
   // Visual feedback - appear earlier and smoother
   const likeOpacity = useTransform(x, [20, 80], [0, 1]);
+  const likeScale = useTransform(x, [20, 80], [0.8, 1]);
   const passOpacity = useTransform(x, [-80, -20], [1, 0]);
+  const passScale = useTransform(x, [-80, -20], [1, 0.8]);
 
   const handleDragStart = () => {
     isDragging.current = true;
@@ -68,28 +71,29 @@ export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
         x,
         rotate,
         opacity: cardOpacity,
+        scale,
       }}
       drag={isTop ? 'x' : false}
       dragDirectionLock
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      dragElastic={0.5}
+      dragElastic={0.6}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      initial={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 12, opacity: isTop ? 1 : 0.7 }}
-      animate={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 12, opacity: isTop ? 1 : 0.7 }}
+      initial={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 10, opacity: isTop ? 1 : 0.6 }}
+      animate={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 10, opacity: isTop ? 1 : 0.6 }}
       exit={{
         x: exitX,
         opacity: 0,
-        rotate: exitX > 0 ? 15 : -15,
-        transition: { duration: 0.2, ease: 'easeOut' }
+        rotate: exitX > 0 ? 12 : -12,
+        transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] }
       }}
       whileDrag={{ cursor: 'grabbing' }}
-      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
     >
-      {/* Card Container */}
+      {/* Card Container - Premium rounded corners and shadow */}
       <div
         onClick={handleCardTap}
-        className="relative h-full w-full rounded-2xl overflow-hidden shadow-2xl cursor-pointer select-none"
+        className="relative h-full w-full rounded-3xl overflow-hidden shadow-[var(--shadow-card)] cursor-pointer select-none"
         style={{ touchAction: 'pan-y' }}
       >
         {/* Full-bleed Image */}
@@ -103,45 +107,52 @@ export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
           draggable={false}
         />
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20 pointer-events-none" />
+        {/* Premium gradient overlay - darker at bottom for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/5 to-black/30 pointer-events-none" />
 
         {/* Swipe feedback - Like */}
         {isTop && (
           <>
             <motion.div
-              style={{ opacity: likeOpacity }}
-              className="absolute top-1/2 right-6 -translate-y-1/2 w-16 h-16 rounded-full bg-[var(--color-accent)] flex items-center justify-center shadow-xl pointer-events-none"
+              style={{ opacity: likeOpacity, scale: likeScale }}
+              className="absolute top-1/2 right-6 -translate-y-1/2 w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-dark)] flex items-center justify-center shadow-[var(--shadow-glow)] pointer-events-none"
             >
-              <Heart size={32} className="text-white" fill="white" />
+              <Heart size={28} className="text-white" fill="white" />
             </motion.div>
 
             {/* Swipe feedback - Pass */}
             <motion.div
-              style={{ opacity: passOpacity }}
-              className="absolute top-1/2 left-6 -translate-y-1/2 w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-xl pointer-events-none"
+              style={{ opacity: passOpacity, scale: passScale }}
+              className="absolute top-1/2 left-6 -translate-y-1/2 w-16 h-16 rounded-2xl bg-white/95 backdrop-blur-sm flex items-center justify-center shadow-xl pointer-events-none"
             >
-              <X size={32} className="text-gray-400" />
+              <X size={28} className="text-gray-400" />
             </motion.div>
           </>
         )}
 
-        {/* Category badge */}
+        {/* Category badge - Premium glass style */}
         <div className="absolute top-5 left-5 pointer-events-none">
           <span
-            className="px-3 py-1.5 rounded-full text-xs font-bold text-white backdrop-blur-sm"
-            style={{ backgroundColor: `${categoryColor}dd` }}
+            className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white backdrop-blur-md shadow-sm"
+            style={{ backgroundColor: `${categoryColor}cc` }}
           >
             {asset.category}
           </span>
         </div>
 
-        {/* Bottom text - Magazine style */}
-        <div className="absolute bottom-0 left-0 right-0 p-5 pointer-events-none">
-          <h2 className="text-xl font-bold text-white leading-tight mb-1.5">
+        {/* Tap to view indicator */}
+        <div className="absolute top-5 right-5 pointer-events-none">
+          <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+            <ArrowUpRight size={16} className="text-white" />
+          </div>
+        </div>
+
+        {/* Bottom text - Editorial magazine style */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none">
+          <h2 className="font-display text-xl font-bold text-white leading-tight mb-2 tracking-tight">
             {asset.name}
           </h2>
-          <p className="text-white/70 text-sm line-clamp-2">
+          <p className="text-white/70 text-sm line-clamp-2 leading-relaxed">
             {asset.shortDescription}
           </p>
         </div>
@@ -173,27 +184,35 @@ export function SwipeStack({ assets }: SwipeStackProps) {
 
   const visibleCards = assets.slice(currentIndex, currentIndex + 2).reverse();
 
-  // End state
+  // End state - Premium completion screen
   if (currentIndex >= assets.length) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center px-8">
-        <div className="w-16 h-16 rounded-full bg-[var(--color-accent)]/10 flex items-center justify-center mb-5">
-          <Check className="w-8 h-8 text-[var(--color-accent)]" />
+        {/* Success icon with gradient */}
+        <div className="relative mb-6">
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[var(--color-accent)]/15 to-[var(--color-accent)]/5 flex items-center justify-center">
+            <Check className="w-9 h-9 text-[var(--color-accent)]" strokeWidth={2.5} />
+          </div>
+          {/* Decorative ring */}
+          <div className="absolute inset-0 rounded-2xl border-2 border-[var(--color-accent)]/20 animate-pulse" />
         </div>
-        <h3 className="text-xl font-bold text-[var(--color-text)] mb-2">
-          {locale === 'ja' ? '完了' : 'Done'}
+
+        <h3 className="font-display text-2xl font-bold text-[var(--color-text)] mb-2 tracking-tight">
+          {locale === 'ja' ? '完了' : 'All Done'}
         </h3>
-        <p className="text-[var(--color-text-muted)] text-sm mb-6 max-w-[240px]">
+        <p className="text-[var(--color-text-muted)] text-sm mb-8 max-w-[260px] leading-relaxed">
           {locale === 'ja'
-            ? 'マーケットでお気に入りを確認'
-            : 'Check favorites in Marketplace'}
+            ? 'マーケットでお気に入りを確認しましょう'
+            : 'Check your favorites in the Marketplace'}
         </p>
+
+        {/* Premium button with gradient */}
         <button
           onClick={resetStack}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[var(--color-primary)] text-white rounded-full font-semibold text-sm"
+          className="group flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-300 ease-[var(--ease-out-expo)]"
         >
-          <RefreshCw size={16} />
-          <span>{locale === 'ja' ? '最初から' : 'Restart'}</span>
+          <RefreshCw size={16} className="group-hover:rotate-180 transition-transform duration-500" />
+          <span>{locale === 'ja' ? '最初から見る' : 'Start Over'}</span>
         </button>
       </div>
     );

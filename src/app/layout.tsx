@@ -1,12 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Space_Grotesk, DM_Sans } from "next/font/google";
 import "./globals.css";
 import ClientProviders from "@/components/layout/ClientProviders";
 import BottomNav from "@/components/layout/BottomNav";
 
-const inter = Inter({
+// Display font - Bold, distinctive headings
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-display",
+  weight: ["500", "600", "700"],
+});
+
+// Body font - Clean, readable
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -25,7 +34,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#fefefe",
+  themeColor: "#0f172a",
 };
 
 export default function RootLayout({
@@ -35,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${spaceGrotesk.variable} ${dmSans.variable} font-sans antialiased`}>
         <ClientProviders>
           <main className="min-h-screen pb-20 md:pb-0 md:pl-64">
             {children}
