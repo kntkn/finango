@@ -137,6 +137,8 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Prevent pull-to-refresh on mobile */
+  overscroll-behavior: none;
 }
 
 body {
@@ -146,6 +148,9 @@ body {
   font-feature-settings: "kern" 1, "liga" 1, "pnum" 1, "tnum" 1;
   letter-spacing: 0;
   line-height: 1.7;
+  /* Prevent iOS bounce effect */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Typography - Clean & Professional */

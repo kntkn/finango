@@ -41,16 +41,29 @@ export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
   const handleDragEnd = (_: unknown, info: PanInfo) => {
     isDragging.current = false;
 
-    // Lower threshold for easier swiping (50px instead of 100)
-    const threshold = 50;
-    // Also check velocity for quick flicks
-    const velocityThreshold = 300;
+    // Get absolute values for comparison
+    const absOffsetX = Math.abs(info.offset.x);
+    const absOffsetY = Math.abs(info.offset.y);
+    const absVelocityX = Math.abs(info.velocity.x);
+
+    // Only register swipe if horizontal movement is dominant (2x more than vertical)
+    const isHorizontalDominant = absOffsetX > absOffsetY * 2;
+
+    // Lower threshold for easier swiping
+    const threshold = 40;
+    // Velocity threshold for quick flicks
+    const velocityThreshold = 200;
+
+    // Must be horizontal-dominant OR have strong horizontal velocity
+    if (!isHorizontalDominant && absVelocityX < velocityThreshold) {
+      return; // Ignore if not clearly horizontal
+    }
 
     if (info.offset.x > threshold || info.velocity.x > velocityThreshold) {
-      setExitX(400);
+      setExitX(350);
       onSwipe('right');
     } else if (info.offset.x < -threshold || info.velocity.x < -velocityThreshold) {
-      setExitX(-400);
+      setExitX(-350);
       onSwipe('left');
     }
   };
@@ -72,29 +85,29 @@ export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
         rotate,
         opacity: cardOpacity,
         scale,
+        touchAction: 'none', // Disable ALL browser touch gestures
       }}
       drag={isTop ? 'x' : false}
       dragDirectionLock
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      dragElastic={0.6}
+      dragElastic={0.7}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      initial={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 10, opacity: isTop ? 1 : 0.6 }}
-      animate={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 10, opacity: isTop ? 1 : 0.6 }}
+      initial={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 8, opacity: isTop ? 1 : 0.7 }}
+      animate={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 8, opacity: isTop ? 1 : 0.7 }}
       exit={{
         x: exitX,
         opacity: 0,
-        rotate: exitX > 0 ? 12 : -12,
-        transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] }
+        rotate: exitX > 0 ? 10 : -10,
+        transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] }
       }}
       whileDrag={{ cursor: 'grabbing' }}
       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
     >
-      {/* Card Container - Premium rounded corners and shadow */}
+      {/* Card Container - Square aspect ratio for predictable swipe */}
       <div
         onClick={handleCardTap}
         className="relative h-full w-full rounded-3xl overflow-hidden shadow-[var(--shadow-card)] cursor-pointer select-none"
-        style={{ touchAction: 'pan-y' }}
       >
         {/* Full-bleed Image */}
         <Image
@@ -107,54 +120,44 @@ export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
           draggable={false}
         />
 
-        {/* Premium gradient overlay - darker at bottom for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/5 to-black/30 pointer-events-none" />
+        {/* Subtle gradient for UI elements */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/20 pointer-events-none" />
 
-        {/* Swipe feedback - Like (Mint/Cheer color) */}
+        {/* Swipe feedback - Like (Mint/Cheer color) - Centered for square card */}
         {isTop && (
           <>
             <motion.div
               style={{ opacity: likeOpacity, scale: likeScale }}
-              className="absolute top-1/2 right-6 -translate-y-1/2 w-16 h-16 rounded-2xl bg-[var(--color-mint)] flex items-center justify-center shadow-lg pointer-events-none"
+              className="absolute top-1/2 right-4 -translate-y-1/2 w-14 h-14 rounded-2xl bg-[var(--color-mint)] flex items-center justify-center shadow-lg pointer-events-none"
             >
-              <Heart size={28} className="text-[var(--color-ink)]" fill="currentColor" />
+              <Heart size={24} className="text-[var(--color-ink)]" fill="currentColor" />
             </motion.div>
 
             {/* Swipe feedback - Pass */}
             <motion.div
               style={{ opacity: passOpacity, scale: passScale }}
-              className="absolute top-1/2 left-6 -translate-y-1/2 w-16 h-16 rounded-2xl bg-white/95 backdrop-blur-sm flex items-center justify-center shadow-lg pointer-events-none"
+              className="absolute top-1/2 left-4 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/95 backdrop-blur-sm flex items-center justify-center shadow-lg pointer-events-none"
             >
-              <X size={28} className="text-[var(--color-ink-muted)]" />
+              <X size={24} className="text-[var(--color-ink-muted)]" />
             </motion.div>
           </>
         )}
 
-        {/* Category badge - Premium glass style */}
-        <div className="absolute top-5 left-5 pointer-events-none">
+        {/* Category badge - Top left */}
+        <div className="absolute top-4 left-4 pointer-events-none">
           <span
-            className="px-3.5 py-1.5 rounded-xl text-sm font-semibold text-white backdrop-blur-md shadow-sm"
+            className="px-3 py-1.5 rounded-xl text-sm font-semibold text-white backdrop-blur-md shadow-sm"
             style={{ backgroundColor: `${categoryColor}cc` }}
           >
             {asset.category}
           </span>
         </div>
 
-        {/* Tap to view indicator - DADS: 44px minimum */}
-        <div className="absolute top-5 right-5 pointer-events-none">
-          <div className="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-            <ArrowUpRight size={18} className="text-white" />
+        {/* Tap to view indicator - Top right */}
+        <div className="absolute top-4 right-4 pointer-events-none">
+          <div className="w-10 h-10 rounded-xl bg-white/25 backdrop-blur-md flex items-center justify-center">
+            <ArrowUpRight size={16} className="text-white" />
           </div>
-        </div>
-
-        {/* Bottom text - Editorial magazine style */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none">
-          <h2 className="font-display text-xl font-bold text-white leading-tight mb-2 tracking-tight">
-            {asset.name}
-          </h2>
-          <p className="text-white/70 text-sm line-clamp-2 leading-relaxed">
-            {asset.shortDescription}
-          </p>
         </div>
       </div>
     </motion.div>
@@ -218,24 +221,52 @@ export function SwipeStack({ assets }: SwipeStackProps) {
     );
   }
 
+  const currentAsset = assets[currentIndex];
+
   return (
-    <div className="relative h-full w-full">
-      {/* Card Stack */}
-      <div className="absolute inset-4">
-        <AnimatePresence mode="popLayout">
-          {visibleCards.map((asset, index) => (
-            <SwipeCard
-              key={asset.id}
-              asset={asset}
-              onSwipe={handleSwipe}
-              isTop={index === visibleCards.length - 1}
-            />
-          ))}
-        </AnimatePresence>
+    <div className="flex flex-col h-full">
+      {/* Square Card Container - Fixed aspect ratio prevents vertical confusion */}
+      <div className="flex-shrink-0 px-4">
+        <div className="relative w-full aspect-square max-w-[min(100%,400px)] mx-auto">
+          <AnimatePresence mode="popLayout">
+            {visibleCards.map((asset, index) => (
+              <SwipeCard
+                key={asset.id}
+                asset={asset}
+                onSwipe={handleSwipe}
+                isTop={index === visibleCards.length - 1}
+              />
+            ))}
+          </AnimatePresence>
+        </div>
       </div>
 
-      {/* Progress - simple dots at bottom */}
-      <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
+      {/* Asset Info - Below the card, not overlaying */}
+      {currentAsset && (
+        <div className="flex-1 flex flex-col justify-center px-6 pt-4 pb-2 text-center">
+          <h2 className="font-display text-xl font-bold text-[var(--color-ink)] leading-tight tracking-tight">
+            {currentAsset.name}
+          </h2>
+          <p className="text-[var(--color-ink-muted)] text-sm mt-2 line-clamp-2 leading-relaxed">
+            {currentAsset.shortDescription}
+          </p>
+
+          {/* Swipe hint */}
+          <div className="flex items-center justify-center gap-6 mt-4">
+            <div className="flex items-center gap-1.5 text-xs text-[var(--color-ink-muted)]">
+              <X size={14} />
+              <span>{locale === 'ja' ? 'スキップ' : 'Skip'}</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-[var(--color-mint-dark)]">
+              <Heart size={14} fill="currentColor" />
+              <span>{locale === 'ja' ? 'いいね' : 'Like'}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Progress dots */}
+      <div className="flex-shrink-0 pb-2 flex justify-center gap-1.5 pointer-events-none">
         {assets.slice(0, Math.min(assets.length, 10)).map((_, index) => (
           <div
             key={index}
@@ -249,7 +280,7 @@ export function SwipeStack({ assets }: SwipeStackProps) {
           />
         ))}
         {assets.length > 10 && (
-          <span className="text-[var(--color-text-muted)] text-sm ml-1">+{assets.length - 10}</span>
+          <span className="text-[var(--color-ink-muted)] text-xs ml-1">+{assets.length - 10}</span>
         )}
       </div>
     </div>

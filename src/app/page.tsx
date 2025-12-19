@@ -21,10 +21,17 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
-      {/* Mobile: Full-screen Swipe Experience - No vertical scroll */}
-      <div className="md:hidden fixed inset-0 bottom-[72px] flex flex-col bg-[var(--color-bg)] overflow-hidden">
+      {/* Mobile: Full-screen Swipe Experience - Optimized for horizontal swipe */}
+      <div
+        className="md:hidden fixed inset-0 bottom-[72px] flex flex-col bg-[var(--color-bg)]"
+        style={{
+          overflow: 'hidden',
+          overscrollBehavior: 'none', // Prevent pull-to-refresh and bounce
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
         {/* Header - Clean Museum Style */}
-        <header className="px-5 pt-4 pb-3 bg-white/95 backdrop-blur-lg border-b border-[var(--color-border)]">
+        <header className="flex-shrink-0 px-5 pt-4 pb-3 bg-white/95 backdrop-blur-lg border-b border-[var(--color-border)]">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-[var(--color-primary)] tracking-tight">finango</h1>
             <button
@@ -37,8 +44,8 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Full-screen Swipe Stack */}
-        <div className="flex-1 py-4 px-4">
+        {/* Swipe Stack Container - Square card with info below */}
+        <div className="flex-1 min-h-0 pt-4">
           <SwipeStack assets={allAssets} />
         </div>
       </div>
