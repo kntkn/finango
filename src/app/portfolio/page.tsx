@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { mockPortfolio, getAssetById, getCategoryById, categories } from '@/data/assets';
 import { useI18n } from '@/lib/i18n';
 import PortfolioChart from '@/components/portfolio/PortfolioChart';
-import { ChevronRight, ExternalLink, Globe, Briefcase, Store, TrendingUp, Flag, CheckCircle } from 'lucide-react';
+import { ChevronRight, ExternalLink, Globe, Briefcase, Store, TrendingUp, Flag } from 'lucide-react';
 import CategoryIcon from '@/components/ui/CategoryIcon';
 
 export default function PortfolioPage() {
@@ -73,21 +73,13 @@ export default function PortfolioPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] pb-24 md:pb-8">
-      {/* Header - Clean Museum Style */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-lg border-b border-[var(--color-border)] px-4 py-3 md:px-8">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          {/* Mobile: Show Finango logo */}
-          <h1 className="md:hidden text-xl font-bold text-[var(--color-primary)]">finango</h1>
-          {/* Desktop: Show page title */}
-          <div className="hidden md:flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-bg)] flex items-center justify-center">
-              <Briefcase size={18} className="text-[var(--color-primary)]" />
-            </div>
-            <h1 className="text-lg font-semibold text-[var(--color-ink)]">{t('portfolio.title')}</h1>
-          </div>
+      {/* Header - Mobile only */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-lg border-b border-[var(--color-border)] px-4 py-3 md:hidden">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold text-[var(--color-primary)]">finango</h1>
           <button
             onClick={toggleLocale}
-            className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-bg-subtle)] text-sm font-medium text-[var(--color-ink-secondary)]"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-bg-subtle)] text-sm font-medium text-[var(--color-ink-secondary)]"
           >
             <Globe size={14} />
             <span className="uppercase text-xs">{locale}</span>

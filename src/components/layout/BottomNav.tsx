@@ -87,15 +87,15 @@ export default function BottomNav() {
           isOpen ? 'w-60 px-4' : 'w-16 px-2'
         }`}
       >
-        {/* Toggle Button */}
+        {/* Toggle Button - Larger and more visible */}
         <button
           onClick={toggle}
-          className="absolute -right-3 top-8 w-6 h-6 rounded-full bg-white border border-[var(--color-border)] flex items-center justify-center hover:bg-[var(--color-bg-subtle)] transition-colors shadow-sm"
+          className="absolute -right-4 top-8 w-8 h-8 rounded-full bg-white border border-[var(--color-border)] flex items-center justify-center hover:bg-[var(--color-bg-subtle)] hover:border-[var(--color-ink-muted)] transition-all shadow-md"
         >
           {isOpen ? (
-            <PanelLeftClose size={14} className="text-[var(--color-ink-muted)]" />
+            <PanelLeftClose size={18} className="text-[var(--color-ink-secondary)]" />
           ) : (
-            <PanelLeft size={14} className="text-[var(--color-ink-muted)]" />
+            <PanelLeft size={18} className="text-[var(--color-ink-secondary)]" />
           )}
         </button>
 

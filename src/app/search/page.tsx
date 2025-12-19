@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useI18n } from '@/lib/i18n';
 import { useLikes } from '@/lib/likes';
 import { assets, categories, getAssetById } from '@/data/assets';
-import { Search, Heart, Filter, X, Globe, SlidersHorizontal, Grid3X3, List, ShoppingBag, Tag, ArrowUpDown } from 'lucide-react';
+import { Search, Heart, Filter, X, Globe, SlidersHorizontal, Grid3X3, List, Tag, ArrowUpDown } from 'lucide-react';
 import CategoryIcon from '@/components/ui/CategoryIcon';
 
 type ViewMode = 'grid' | 'list';
@@ -80,27 +80,12 @@ export default function MarketplacePage() {
       <header className="sticky top-0 z-40 bg-[var(--color-surface)] border-b border-[var(--color-border)]">
         <div className="px-4 py-4 md:px-8">
           <div className="max-w-6xl mx-auto">
-            {/* Top Row */}
-            <div className="flex items-center justify-between mb-4">
-              {/* Mobile: Show Finango logo */}
-              <h1 className="md:hidden text-xl font-black text-[var(--color-primary)]">finango</h1>
-              {/* Desktop: Show full header */}
-              <div className="hidden md:flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-[var(--color-accent)] flex items-center justify-center">
-                  <ShoppingBag size={20} className="text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-[var(--color-text)]">
-                    {locale === 'ja' ? 'マーケットプレイス' : 'Marketplace'}
-                  </h1>
-                  <p className="text-sm text-[var(--color-text-muted)]">
-                    {filteredAssets.length} {locale === 'ja' ? '件の銘柄' : 'assets available'}
-                  </p>
-                </div>
-              </div>
+            {/* Top Row - Mobile only */}
+            <div className="flex items-center justify-between mb-4 md:hidden">
+              <h1 className="text-xl font-black text-[var(--color-primary)]">finango</h1>
               <button
                 onClick={toggleLocale}
-                className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-bg)] text-sm font-medium text-[var(--color-text-secondary)]"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-bg)] text-sm font-medium text-[var(--color-text-secondary)]"
               >
                 <Globe size={12} />
                 <span className="uppercase">{locale}</span>
