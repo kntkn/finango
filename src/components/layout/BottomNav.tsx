@@ -1,15 +1,23 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Home, LayoutGrid, Briefcase, Globe, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Home, LayoutGrid, Briefcase, Globe, PanelLeftClose, PanelLeft, LogIn, LogOut, User } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useSidebar } from '@/lib/sidebar';
+import { useAuth } from '@/lib/auth';
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const { locale, setLocale } = useI18n();
   const { isOpen, toggle } = useSidebar();
+  const { isAuthenticated, user, logout } = useAuth();
+
+  // Don't show nav on login page
+  if (pathname === '/login') {
+    return null;
+  }
 
   const navItems = [
     {
@@ -17,23 +25,38 @@ export default function BottomNav() {
       icon: Home,
       labelEn: 'Home',
       labelJa: 'ホーム',
+      requiresAuth: false,
     },
     {
       href: '/search',
       icon: LayoutGrid,
       labelEn: 'Markets',
       labelJa: 'マーケット',
+      requiresAuth: true,
     },
     {
       href: '/portfolio',
       icon: Briefcase,
       labelEn: 'Portfolio',
       labelJa: 'ポートフォリオ',
+      requiresAuth: true,
     },
   ];
 
   const toggleLocale = () => {
     setLocale(locale === 'en' ? 'ja' : 'en');
+  };
+
+  const handleNavClick = (e: React.MouseEvent, item: typeof navItems[0]) => {
+    if (item.requiresAuth && !isAuthenticated) {
+      e.preventDefault();
+      router.push('/login');
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
   };
 
   return (
@@ -58,15 +81,21 @@ export default function BottomNav() {
                 ? pathname === '/'
                 : pathname.startsWith(item.href);
 
+            // If requires auth and not authenticated, show muted
+            const isDisabled = item.requiresAuth && !isAuthenticated;
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={(e) => handleNavClick(e, item)}
                 className={`
                   flex items-center justify-center w-12 h-12 rounded-xl
                   transition-colors duration-150
-                  ${isActive
+                  ${isActive && !isDisabled
                     ? 'text-[var(--color-primary)] bg-[var(--color-primary-bg)]'
+                    : isDisabled
+                    ? 'text-[var(--color-ink-muted)]/40'
                     : 'text-[var(--color-ink-muted)]'
                   }
                 `}
@@ -78,6 +107,30 @@ export default function BottomNav() {
               </Link>
             );
           })}
+
+          {/* Login/User button on mobile */}
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center w-12 h-12 rounded-xl text-[var(--color-ink-muted)] transition-colors duration-150"
+            >
+              <User size={24} strokeWidth={1.5} />
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className={`
+                flex items-center justify-center w-12 h-12 rounded-xl
+                transition-colors duration-150
+                ${pathname === '/login'
+                  ? 'text-[var(--color-primary)] bg-[var(--color-primary-bg)]'
+                  : 'text-[var(--color-ink-muted)]'
+                }
+              `}
+            >
+              <LogIn size={24} strokeWidth={1.5} />
+            </Link>
+          )}
         </div>
       </nav>
 
@@ -117,21 +170,26 @@ export default function BottomNav() {
                 ? pathname === '/'
                 : pathname.startsWith(item.href);
 
+            const isDisabled = item.requiresAuth && !isAuthenticated;
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={(e) => handleNavClick(e, item)}
                 className={`
                   relative flex items-center gap-3 py-3 rounded-xl transition-all duration-200
                   ${isOpen ? 'px-4' : 'justify-center px-2'}
-                  ${isActive
+                  ${isActive && !isDisabled
                     ? 'bg-[var(--color-primary-bg)] text-[var(--color-primary)] font-semibold'
+                    : isDisabled
+                    ? 'text-[var(--color-ink-muted)]/40 cursor-not-allowed'
                     : 'text-[var(--color-ink-secondary)] hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-ink)]'
                   }
                 `}
                 title={!isOpen ? (locale === 'ja' ? item.labelJa : item.labelEn) : undefined}
               >
-                {isActive && isOpen && (
+                {isActive && isOpen && !isDisabled && (
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-[var(--color-primary)]" />
                 )}
 
@@ -147,7 +205,37 @@ export default function BottomNav() {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-[var(--color-border)] pt-4 mt-4">
+        <div className="border-t border-[var(--color-border)] pt-4 mt-4 space-y-1">
+          {/* User / Login */}
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className={`w-full flex items-center gap-3 py-3 rounded-xl text-[var(--color-ink-muted)] hover:bg-red-50 hover:text-red-600 transition-all duration-200 ${
+                isOpen ? 'px-4' : 'justify-center px-2'
+              }`}
+              title={!isOpen ? (locale === 'ja' ? 'ログアウト' : 'Logout') : undefined}
+            >
+              <LogOut size={18} strokeWidth={1.5} />
+              {isOpen && (
+                <span className="text-sm">{locale === 'ja' ? 'ログアウト' : 'Logout'}</span>
+              )}
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className={`w-full flex items-center gap-3 py-3 rounded-xl text-[var(--color-primary)] hover:bg-[var(--color-primary-bg)] transition-all duration-200 ${
+                isOpen ? 'px-4' : 'justify-center px-2'
+              }`}
+              title={!isOpen ? (locale === 'ja' ? 'ログイン' : 'Login') : undefined}
+            >
+              <LogIn size={18} strokeWidth={1.5} />
+              {isOpen && (
+                <span className="text-sm font-medium">{locale === 'ja' ? 'ログイン' : 'Login'}</span>
+              )}
+            </Link>
+          )}
+
+          {/* Language Toggle */}
           <button
             onClick={toggleLocale}
             className={`w-full flex items-center gap-3 py-3 rounded-xl text-[var(--color-ink-muted)] hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-ink)] transition-all duration-200 ${
