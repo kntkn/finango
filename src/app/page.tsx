@@ -23,20 +23,21 @@ export default function Home() {
     <div className="min-h-screen bg-[var(--color-bg)]">
       {/* Mobile: Full-screen Swipe Experience - Optimized for horizontal swipe */}
       <div
-        className="md:hidden fixed inset-0 bottom-[72px] flex flex-col bg-[var(--color-bg)]"
+        className="md:hidden fixed inset-0 flex flex-col bg-[var(--color-bg)]"
         style={{
+          paddingBottom: 'calc(72px + env(safe-area-inset-bottom, 0px))',
           overflow: 'hidden',
-          overscrollBehavior: 'none', // Prevent pull-to-refresh and bounce
-          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'none',
+          touchAction: 'none', // Prevent ALL touch scrolling on container
         }}
       >
-        {/* Header - Clean Museum Style */}
-        <header className="flex-shrink-0 px-5 pt-4 pb-3 bg-white/95 backdrop-blur-lg border-b border-[var(--color-border)]">
+        {/* Header */}
+        <header className="flex-shrink-0 px-5 pt-4 pb-3 bg-white border-b border-[var(--color-border)]">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-[var(--color-primary)] tracking-tight">finango</h1>
             <button
               onClick={toggleLocale}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-bg-subtle)] text-sm font-medium text-[var(--color-ink-secondary)] hover:bg-[var(--color-border)] transition-colors duration-200"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-bg-subtle)] text-sm font-medium text-[var(--color-ink-secondary)]"
             >
               <Globe size={14} />
               <span className="uppercase text-xs tracking-wide">{locale}</span>
@@ -44,8 +45,8 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Swipe Stack Container - Square card with info below */}
-        <div className="flex-1 min-h-0 pt-4">
+        {/* Swipe Stack */}
+        <div className="flex-1 min-h-0">
           <SwipeStack assets={allAssets} />
         </div>
       </div>

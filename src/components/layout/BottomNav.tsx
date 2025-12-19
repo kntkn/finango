@@ -4,12 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, LayoutGrid, Briefcase, Globe } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
-import { useLikes } from '@/lib/likes';
 
 export default function BottomNav() {
   const pathname = usePathname();
   const { locale, setLocale } = useI18n();
-  const { likes } = useLikes();
 
   const navItems = [
     {
@@ -23,7 +21,6 @@ export default function BottomNav() {
       icon: LayoutGrid,
       labelEn: 'Markets',
       labelJa: 'マーケット',
-      badge: likes.length > 0 ? likes.length : undefined
     },
     {
       href: '/portfolio',
@@ -39,11 +36,20 @@ export default function BottomNav() {
 
   return (
     <>
-      {/* Mobile Bottom Nav - Clean Museum Style */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden safe-bottom">
-        <div className="absolute inset-0 bg-white/95 backdrop-blur-lg border-t border-[var(--color-border)]" />
+      {/* Mobile Bottom Nav - Icons only, completely fixed */}
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
+        style={{
+          position: 'fixed',
+          transform: 'translateZ(0)', // Force GPU layer for stability
+          WebkitBackfaceVisibility: 'hidden',
+        }}
+      >
+        {/* Solid background - no transparency for stability */}
+        <div className="absolute inset-0 bg-white border-t border-[var(--color-border)]" />
 
-        <div className="relative flex items-center justify-around px-4 py-2">
+        {/* Safe area padding for notched devices */}
+        <div className="relative flex items-center justify-around px-6 py-3 pb-[max(12px,env(safe-area-inset-bottom))]">
           {navItems.map((item) => {
             const isActive =
               item.href === '/'
@@ -55,28 +61,18 @@ export default function BottomNav() {
                 key={item.href}
                 href={item.href}
                 className={`
-                  relative flex flex-col items-center justify-center gap-1 py-2 px-4
-                  transition-all duration-200
+                  flex items-center justify-center w-12 h-12 rounded-xl
+                  transition-colors duration-150
                   ${isActive
-                    ? 'text-[var(--color-primary)]'
-                    : 'text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]'
+                    ? 'text-[var(--color-primary)] bg-[var(--color-primary-bg)]'
+                    : 'text-[var(--color-ink-muted)]'
                   }
                 `}
               >
-                <div className="relative">
-                  <item.icon
-                    size={22}
-                    strokeWidth={isActive ? 2 : 1.5}
-                  />
-                  {item.badge && item.badge > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] px-1 bg-[var(--color-mint)] text-[var(--color-ink)] text-[10px] font-bold rounded-full flex items-center justify-center">
-                      {item.badge > 99 ? '99+' : item.badge}
-                    </span>
-                  )}
-                </div>
-                <span className={`text-[11px] ${isActive ? 'font-semibold' : 'font-medium'}`}>
-                  {locale === 'ja' ? item.labelJa : item.labelEn}
-                </span>
+                <item.icon
+                  size={24}
+                  strokeWidth={isActive ? 2 : 1.5}
+                />
               </Link>
             );
           })}
@@ -117,14 +113,7 @@ export default function BottomNav() {
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-[var(--color-primary)]" />
                 )}
 
-                <div className="relative">
-                  <item.icon size={20} strokeWidth={isActive ? 2 : 1.5} />
-                  {item.badge && item.badge > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] px-1 bg-[var(--color-mint)] text-[var(--color-ink)] text-[10px] font-bold rounded-full flex items-center justify-center">
-                      {item.badge > 99 ? '99+' : item.badge}
-                    </span>
-                  )}
-                </div>
+                <item.icon size={20} strokeWidth={isActive ? 2 : 1.5} />
                 <span className="text-sm">
                   {locale === 'ja' ? item.labelJa : item.labelEn}
                 </span>

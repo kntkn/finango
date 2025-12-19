@@ -13,9 +13,10 @@ interface SwipeCardProps {
   asset: Asset;
   onSwipe: (direction: 'left' | 'right') => void;
   isTop: boolean;
+  stackIndex?: number; // 0 = top, 1 = second, 2 = third
 }
 
-export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
+export default function SwipeCard({ asset, onSwipe, isTop, stackIndex = 0 }: SwipeCardProps) {
   const router = useRouter();
   const { locale } = useI18n();
   const [exitX, setExitX] = useState(0);
@@ -26,7 +27,12 @@ export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
   // Smoother rotation and opacity transforms
   const rotate = useTransform(x, [-150, 0, 150], [-6, 0, 6]);
   const cardOpacity = useTransform(x, [-150, 0, 150], [0.85, 1, 0.85]);
-  const scale = useTransform(x, [-150, 0, 150], [0.98, 1, 0.98]);
+  const dragScale = useTransform(x, [-150, 0, 150], [0.98, 1, 0.98]);
+
+  // Stack visual properties based on position
+  const stackScale = isTop ? 1 : stackIndex === 1 ? 0.95 : 0.90;
+  const stackY = isTop ? 0 : stackIndex === 1 ? 8 : 16;
+  const stackOpacity = isTop ? 1 : stackIndex === 1 ? 0.7 : 0.4;
 
   // Visual feedback - appear earlier and smoother
   const likeOpacity = useTransform(x, [20, 80], [0, 1]);
@@ -79,12 +85,12 @@ export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
 
   return (
     <motion.div
-      className={`absolute inset-0 ${isTop ? 'z-10' : 'z-0'}`}
+      className={`absolute inset-0 ${isTop ? 'z-10' : stackIndex === 1 ? 'z-[5]' : 'z-0'}`}
       style={{
-        x,
-        rotate,
-        opacity: cardOpacity,
-        scale,
+        x: isTop ? x : 0,
+        rotate: isTop ? rotate : 0,
+        opacity: isTop ? cardOpacity : stackOpacity,
+        scale: isTop ? dragScale : stackScale,
         touchAction: 'none', // Disable ALL browser touch gestures
       }}
       drag={isTop ? 'x' : false}
@@ -93,8 +99,8 @@ export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
       dragElastic={0.7}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      initial={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 8, opacity: isTop ? 1 : 0.7 }}
-      animate={{ scale: isTop ? 1 : 0.95, y: isTop ? 0 : 8, opacity: isTop ? 1 : 0.7 }}
+      initial={{ scale: stackScale, y: stackY, opacity: stackOpacity }}
+      animate={{ scale: stackScale, y: stackY, opacity: stackOpacity }}
       exit={{
         x: exitX,
         opacity: 0,
@@ -185,36 +191,33 @@ export function SwipeStack({ assets }: SwipeStackProps) {
     setCurrentIndex(0);
   };
 
-  const visibleCards = assets.slice(currentIndex, currentIndex + 2).reverse();
+  // Show 3 cards for stack visual effect
+  const visibleCards = assets.slice(currentIndex, currentIndex + 3).reverse();
 
   // End state - Premium completion screen
   if (currentIndex >= assets.length) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center px-8">
-        {/* Success icon with gradient */}
         <div className="relative mb-6">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[var(--color-accent)]/15 to-[var(--color-accent)]/5 flex items-center justify-center">
-            <Check className="w-9 h-9 text-[var(--color-accent)]" strokeWidth={2.5} />
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[var(--color-primary)]/15 to-[var(--color-primary)]/5 flex items-center justify-center">
+            <Check className="w-9 h-9 text-[var(--color-primary)]" strokeWidth={2.5} />
           </div>
-          {/* Decorative ring */}
-          <div className="absolute inset-0 rounded-2xl border-2 border-[var(--color-accent)]/20 animate-pulse" />
         </div>
 
-        <h3 className="font-display text-2xl font-bold text-[var(--color-text)] mb-2 tracking-tight">
+        <h3 className="font-display text-xl font-bold text-[var(--color-ink)] mb-2 tracking-tight">
           {locale === 'ja' ? '完了' : 'All Done'}
         </h3>
-        <p className="text-[var(--color-text-muted)] text-sm mb-8 max-w-[260px] leading-relaxed">
+        <p className="text-[var(--color-ink-muted)] text-sm mb-6 max-w-[240px]">
           {locale === 'ja'
             ? 'マーケットでお気に入りを確認しましょう'
             : 'Check your favorites in the Marketplace'}
         </p>
 
-        {/* Premium button with gradient */}
         <button
           onClick={resetStack}
-          className="group flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-300 ease-[var(--ease-out-expo)]"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[var(--color-primary)] text-white rounded-xl font-semibold text-sm"
         >
-          <RefreshCw size={16} className="group-hover:rotate-180 transition-transform duration-500" />
+          <RefreshCw size={14} />
           <span>{locale === 'ja' ? '最初から見る' : 'Start Over'}</span>
         </button>
       </div>
@@ -225,62 +228,31 @@ export function SwipeStack({ assets }: SwipeStackProps) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Square Card Container - Fixed aspect ratio prevents vertical confusion */}
-      <div className="flex-shrink-0 px-4">
-        <div className="relative w-full aspect-square max-w-[min(100%,400px)] mx-auto">
+      {/* Card Stack Container */}
+      <div className="flex-1 flex flex-col justify-center px-4">
+        <div className="relative w-full aspect-square max-w-[min(100%,340px)] mx-auto">
           <AnimatePresence mode="popLayout">
-            {visibleCards.map((asset, index) => (
-              <SwipeCard
-                key={asset.id}
-                asset={asset}
-                onSwipe={handleSwipe}
-                isTop={index === visibleCards.length - 1}
-              />
-            ))}
+            {visibleCards.map((asset, index) => {
+              const cardCount = visibleCards.length;
+              const stackPosition = cardCount - 1 - index; // 0 = top, 1 = second, etc.
+              return (
+                <SwipeCard
+                  key={asset.id}
+                  asset={asset}
+                  onSwipe={handleSwipe}
+                  isTop={stackPosition === 0}
+                  stackIndex={stackPosition}
+                />
+              );
+            })}
           </AnimatePresence>
         </div>
-      </div>
 
-      {/* Asset Info - Below the card, not overlaying */}
-      {currentAsset && (
-        <div className="flex-1 flex flex-col justify-center px-6 pt-4 pb-2 text-center">
-          <h2 className="font-display text-xl font-bold text-[var(--color-ink)] leading-tight tracking-tight">
+        {/* Title only - 1 line */}
+        {currentAsset && (
+          <h2 className="text-center font-display text-lg font-bold text-[var(--color-ink)] mt-5 px-4 truncate">
             {currentAsset.name}
           </h2>
-          <p className="text-[var(--color-ink-muted)] text-sm mt-2 line-clamp-2 leading-relaxed">
-            {currentAsset.shortDescription}
-          </p>
-
-          {/* Swipe hint */}
-          <div className="flex items-center justify-center gap-6 mt-4">
-            <div className="flex items-center gap-1.5 text-xs text-[var(--color-ink-muted)]">
-              <X size={14} />
-              <span>{locale === 'ja' ? 'スキップ' : 'Skip'}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-[var(--color-mint-dark)]">
-              <Heart size={14} fill="currentColor" />
-              <span>{locale === 'ja' ? 'いいね' : 'Like'}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Progress dots */}
-      <div className="flex-shrink-0 pb-2 flex justify-center gap-1.5 pointer-events-none">
-        {assets.slice(0, Math.min(assets.length, 10)).map((_, index) => (
-          <div
-            key={index}
-            className={`w-1.5 h-1.5 rounded-full transition-all ${
-              index < currentIndex
-                ? 'bg-[var(--color-primary)]/30'
-                : index === currentIndex
-                ? 'bg-[var(--color-primary)]'
-                : 'bg-[var(--color-border)]'
-            }`}
-          />
-        ))}
-        {assets.length > 10 && (
-          <span className="text-[var(--color-ink-muted)] text-xs ml-1">+{assets.length - 10}</span>
         )}
       </div>
     </div>
