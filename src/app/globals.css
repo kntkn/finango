@@ -490,11 +490,11 @@ h3 { font-size: 1.25rem; }
 }
 
 .animate-marquee-slow {
-  animation: marquee-slow 60s linear infinite;
+  animation: marquee-slow 50s linear infinite;
 }
 
 .animate-marquee-slow-reverse {
-  animation: marquee-slow-reverse 65s linear infinite;
+  animation: marquee-slow-reverse 50s linear infinite;
 }
 
 .animate-marquee-medium {
