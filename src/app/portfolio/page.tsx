@@ -109,11 +109,11 @@ export default function PortfolioPage() {
                   </p>
                   <div className="flex items-center gap-4 mt-4 pt-4 border-t border-white/20">
                     <div>
-                      <p className="text-xs opacity-70">{locale === 'ja' ? '保有銘柄' : 'Holdings'}</p>
+                      <p className="text-sm opacity-70">{locale === 'ja' ? '保有銘柄' : 'Holdings'}</p>
                       <p className="text-lg font-semibold">{portfolioData.items.length}</p>
                     </div>
                     <div>
-                      <p className="text-xs opacity-70">{locale === 'ja' ? 'カテゴリ' : 'Categories'}</p>
+                      <p className="text-sm opacity-70">{locale === 'ja' ? 'カテゴリ' : 'Categories'}</p>
                       <p className="text-lg font-semibold">{portfolioData.uniqueCategories.length}</p>
                     </div>
                     <div className="ml-auto flex items-center gap-1 text-emerald-300">
@@ -153,7 +153,7 @@ export default function PortfolioPage() {
                           className="flex items-center gap-3 p-4 bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)]/30 hover:shadow-md transition-all group"
                         >
                           <div
-                            className="w-10 h-10 rounded-lg flex items-center justify-center"
+                            className="w-11 h-11 rounded-lg flex items-center justify-center"
                             style={{ backgroundColor: `${category.color}15` }}
                           >
                             <CategoryIcon icon={category.icon} size={20} color={category.color} />
@@ -162,7 +162,7 @@ export default function PortfolioPage() {
                             <p className="font-medium text-sm text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors truncate">
                               {locale === 'ja' ? category.nameJa : category.name}
                             </p>
-                            <p className="text-xs text-[var(--color-text-muted)]">
+                            <p className="text-sm text-[var(--color-text-muted)]">
                               {locale === 'ja' ? '売買可能' : 'Trade available'}
                             </p>
                           </div>
@@ -205,7 +205,7 @@ export default function PortfolioPage() {
                           <h3 className="font-semibold text-sm text-[var(--color-text)] truncate">
                             {item.asset?.name}
                           </h3>
-                          <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                          <p className="text-sm text-[var(--color-text-muted)] mt-0.5">
                             {locale === 'ja' ? item.category?.nameJa : item.category?.name} • {formatDate(item.purchaseDate)}
                           </p>
                           <p className="text-sm font-bold mt-1 text-[var(--color-accent)]">

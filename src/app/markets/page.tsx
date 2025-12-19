@@ -21,14 +21,14 @@ export default function MarketsPage() {
           <h1 className="md:hidden font-display text-xl font-bold text-[var(--color-primary)] tracking-tight">finango</h1>
           {/* Desktop: Show page title */}
           <div className="hidden md:flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[var(--color-accent)]/10 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-xl bg-[var(--color-accent)]/10 flex items-center justify-center">
               <LayoutGrid size={18} className="text-[var(--color-accent)]" />
             </div>
             <h1 className="font-display text-xl font-bold text-[var(--color-text)] tracking-tight">{t('markets.title')}</h1>
           </div>
           <button
             onClick={toggleLocale}
-            className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--color-bg)] text-xs font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-border)] transition-colors duration-300"
+            className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--color-bg)] text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-border)] transition-colors duration-300"
           >
             <Globe size={12} />
             <span className="uppercase tracking-wide">{locale}</span>

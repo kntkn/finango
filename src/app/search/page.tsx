@@ -86,21 +86,21 @@ export default function MarketplacePage() {
               <h1 className="md:hidden text-xl font-black text-[var(--color-primary)]">finango</h1>
               {/* Desktop: Show full header */}
               <div className="hidden md:flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[var(--color-accent)] flex items-center justify-center">
+                <div className="w-11 h-11 rounded-xl bg-[var(--color-accent)] flex items-center justify-center">
                   <ShoppingBag size={20} className="text-white" />
                 </div>
                 <div>
                   <h1 className="text-xl font-bold text-[var(--color-text)]">
                     {locale === 'ja' ? 'マーケットプレイス' : 'Marketplace'}
                   </h1>
-                  <p className="text-xs text-[var(--color-text-muted)]">
+                  <p className="text-sm text-[var(--color-text-muted)]">
                     {filteredAssets.length} {locale === 'ja' ? '件の銘柄' : 'assets available'}
                   </p>
                 </div>
               </div>
               <button
                 onClick={toggleLocale}
-                className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-bg)] text-xs font-medium text-[var(--color-text-secondary)]"
+                className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-bg)] text-sm font-medium text-[var(--color-text-secondary)]"
               >
                 <Globe size={12} />
                 <span className="uppercase">{locale}</span>
@@ -187,7 +187,7 @@ export default function MarketplacePage() {
               <div className="flex gap-2 flex-wrap">
                 <button
                   onClick={() => setActiveCategory(null)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                     activeCategory === null
                       ? 'bg-[var(--color-primary)] text-white'
                       : 'bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]'
@@ -200,7 +200,7 @@ export default function MarketplacePage() {
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(activeCategory === cat.id ? null : cat.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                       activeCategory === cat.id
                         ? 'text-white'
                         : 'bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-accent)]'
@@ -217,7 +217,7 @@ export default function MarketplacePage() {
               {hasActiveFilters && (
                 <button
                   onClick={clearFilters}
-                  className="mt-3 text-xs text-[var(--color-accent)] font-medium hover:underline"
+                  className="mt-3 text-sm text-[var(--color-accent)] font-medium hover:underline"
                 >
                   {locale === 'ja' ? 'フィルターをクリア' : 'Clear all filters'}
                 </button>
@@ -237,13 +237,13 @@ export default function MarketplacePage() {
                 <h2 className="text-sm font-semibold flex items-center gap-2 text-[var(--color-text)]">
                   <Heart size={14} className="text-rose-500" fill="currentColor" />
                   {locale === 'ja' ? 'お気に入り' : 'Favorites'}
-                  <span className="text-xs font-normal text-[var(--color-text-muted)]">
+                  <span className="text-sm font-normal text-[var(--color-text-muted)]">
                     ({likedAssets.length})
                   </span>
                 </h2>
                 <Link
                   href="/portfolio"
-                  className="text-xs text-[var(--color-accent)] font-medium hover:underline"
+                  className="text-sm text-[var(--color-accent)] font-medium hover:underline"
                 >
                   {locale === 'ja' ? 'すべて見る' : 'View all'}
                 </Link>
@@ -264,11 +264,11 @@ export default function MarketplacePage() {
                         sizes="128px"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                      <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 bg-white/90 rounded text-[10px] font-semibold text-[var(--color-text)]">
+                      <span className="absolute bottom-1.5 left-1.5 px-2 py-0.5 bg-white/90 rounded text-sm font-semibold text-[var(--color-text)]">
                         {asset.category}
                       </span>
                     </div>
-                    <p className="text-xs font-medium text-[var(--color-text)] line-clamp-1 group-hover:text-[var(--color-accent)] transition-colors">
+                    <p className="text-sm font-medium text-[var(--color-text)] line-clamp-1 group-hover:text-[var(--color-accent)] transition-colors">
                       {asset.name}
                     </p>
                   </Link>
@@ -307,15 +307,15 @@ export default function MarketplacePage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                       <button
                         onClick={(e) => handleLike(e, asset.id)}
-                        className={`absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-all hover:scale-110 ${
+                        className={`absolute top-2 right-2 w-11 h-11 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center transition-all hover:scale-110 ${
                           isLiked(asset.id) ? 'text-rose-500' : 'text-[var(--color-text-muted)]'
                         } ${likeAnimation === asset.id ? 'animate-heart-pop' : ''}`}
                       >
-                        <Heart size={14} fill={isLiked(asset.id) ? 'currentColor' : 'none'} />
+                        <Heart size={16} fill={isLiked(asset.id) ? 'currentColor' : 'none'} />
                       </button>
                       <div className="absolute bottom-2 left-2 flex items-center gap-1.5">
                         <span
-                          className="px-2 py-1 rounded text-[10px] font-semibold text-white"
+                          className="px-2 py-1 rounded text-sm font-semibold text-white"
                           style={{ backgroundColor: categories.find(c => c.id === asset.categoryId)?.color || 'var(--color-accent)' }}
                         >
                           {asset.category}
@@ -326,7 +326,7 @@ export default function MarketplacePage() {
                       <h3 className="font-semibold text-sm text-[var(--color-text)] line-clamp-1 group-hover:text-[var(--color-accent)] transition-colors">
                         {asset.name}
                       </h3>
-                      <p className="text-xs text-[var(--color-text-muted)] mt-1 line-clamp-2">
+                      <p className="text-sm text-[var(--color-text-muted)] mt-1 line-clamp-2">
                         {asset.shortDescription}
                       </p>
                     </div>
@@ -353,7 +353,7 @@ export default function MarketplacePage() {
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
                       <div className="flex items-center gap-2 mb-1">
                         <span
-                          className="px-2 py-0.5 rounded text-[10px] font-semibold text-white"
+                          className="px-2 py-0.5 rounded text-sm font-semibold text-white"
                           style={{ backgroundColor: categories.find(c => c.id === asset.categoryId)?.color || 'var(--color-accent)' }}
                         >
                           {asset.category}
@@ -368,7 +368,7 @@ export default function MarketplacePage() {
                     </div>
                     <button
                       onClick={(e) => handleLike(e, asset.id)}
-                      className={`self-center w-10 h-10 rounded-full bg-[var(--color-bg)] flex items-center justify-center transition-all hover:scale-110 flex-shrink-0 ${
+                      className={`self-center w-11 h-11 rounded-full bg-[var(--color-bg)] flex items-center justify-center transition-all hover:scale-110 flex-shrink-0 ${
                         isLiked(asset.id) ? 'text-rose-500' : 'text-[var(--color-text-muted)]'
                       } ${likeAnimation === asset.id ? 'animate-heart-pop' : ''}`}
                     >

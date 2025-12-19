@@ -70,14 +70,14 @@ export default function AssetDetailClient({ asset, category }: AssetDetailClient
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link
             href={`/markets/${asset.categoryId}`}
-            className="w-10 h-10 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/40 transition-colors"
+            className="w-11 h-11 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/40 transition-colors"
           >
             <ChevronLeft size={20} />
           </Link>
           <div className="flex items-center gap-2">
             <button
               onClick={handleLike}
-              className={`w-10 h-10 rounded-full backdrop-blur-sm flex items-center justify-center transition-all ${
+              className={`w-11 h-11 rounded-full backdrop-blur-sm flex items-center justify-center transition-all ${
                 isLiked(asset.id)
                   ? 'bg-red-500 text-white'
                   : 'bg-black/30 text-white hover:bg-black/40'
@@ -87,13 +87,13 @@ export default function AssetDetailClient({ asset, category }: AssetDetailClient
             </button>
             <button
               onClick={handleShare}
-              className="w-10 h-10 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/40 transition-colors"
+              className="w-11 h-11 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/40 transition-colors"
             >
               <Share2 size={18} />
             </button>
             <button
               onClick={toggleLocale}
-              className="md:hidden w-10 h-10 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/40 transition-colors"
+              className="md:hidden w-11 h-11 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/40 transition-colors"
             >
               <Globe size={16} />
             </button>
@@ -224,7 +224,7 @@ export default function AssetDetailClient({ asset, category }: AssetDetailClient
             <span>{t('asset.viewOnAngo')}</span>
             <ExternalLink size={18} />
           </a>
-          <p className="text-center text-xs text-[var(--color-text-muted)] mt-3">
+          <p className="text-center text-sm text-[var(--color-text-muted)] mt-3">
             {t('asset.secureNote')}
           </p>
         </motion.div>

@@ -37,7 +37,7 @@ export default function LikesPage() {
             <Heart size={20} className="text-[var(--color-accent)] fill-[var(--color-accent)]" />
             <h1 className="text-xl font-bold">{t('likes.title')}</h1>
             {likedAssets.length > 0 && (
-              <span className="ml-2 px-2 py-0.5 rounded-full bg-[var(--color-accent)] text-white text-xs font-medium">
+              <span className="ml-2 px-2 py-0.5 rounded-full bg-[var(--color-accent)] text-white text-sm font-medium">
                 {likedAssets.length}
               </span>
             )}
@@ -116,7 +116,7 @@ export default function LikesPage() {
                             sizes="(max-width: 768px) 96px, 33vw"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent md:opacity-0 md:hover:opacity-100 transition-opacity" />
-                          <span className="hidden md:block absolute bottom-2 left-2 chip chip-accent text-xs">
+                          <span className="hidden md:block absolute bottom-2 left-2 chip chip-accent text-sm">
                             {asset.category}
                           </span>
                         </div>
@@ -124,11 +124,11 @@ export default function LikesPage() {
                         {/* Content */}
                         <div className="flex-1 p-3 md:p-4 flex flex-col justify-between">
                           <div>
-                            <span className="md:hidden chip chip-accent text-xs mb-1.5 inline-block">
+                            <span className="md:hidden chip chip-accent text-sm mb-1.5 inline-block">
                               {asset.category}
                             </span>
                             <h3 className="font-semibold text-sm line-clamp-1">{asset.name}</h3>
-                            <p className="text-xs text-[var(--color-text-muted)] mt-1 line-clamp-2">
+                            <p className="text-sm text-[var(--color-text-muted)] mt-1 line-clamp-2">
                               {asset.shortDescription}
                             </p>
                           </div>
@@ -139,7 +139,7 @@ export default function LikesPage() {
                               href={`https://ango.jp/asset/${asset.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-1 btn-primary text-xs py-2 text-center"
+                              className="flex-1 btn-primary text-sm py-2 text-center"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <ShoppingBag size={14} className="inline mr-1" />

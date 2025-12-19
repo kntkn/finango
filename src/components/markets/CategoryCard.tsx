@@ -49,10 +49,10 @@ export default function CategoryCard({ category, index }: CategoryCardProps) {
           </div>
         </div>
 
-        {/* Arrow with animation */}
-        <div className="w-8 h-8 rounded-lg bg-[var(--color-bg)] flex items-center justify-center group-hover:bg-[var(--color-primary)] transition-all duration-300">
+        {/* Arrow with animation - DADS: 44px minimum */}
+        <div className="w-11 h-11 rounded-lg bg-[var(--color-bg)] flex items-center justify-center group-hover:bg-[var(--color-primary)] transition-all duration-300">
           <ArrowUpRight
-            size={16}
+            size={18}
             className="text-[var(--color-text-muted)] group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300"
           />
         </div>

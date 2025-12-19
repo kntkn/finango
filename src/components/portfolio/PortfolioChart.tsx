@@ -114,7 +114,7 @@ export default function PortfolioChart({ data, total }: PortfolioChartProps) {
       <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-lg w-fit">
         <button
           onClick={() => setChartType('pie')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
             chartType === 'pie'
               ? 'bg-white shadow-sm text-gray-900'
               : 'text-gray-500 hover:text-gray-700'
@@ -125,7 +125,7 @@ export default function PortfolioChart({ data, total }: PortfolioChartProps) {
         </button>
         <button
           onClick={() => setChartType('growth')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
             chartType === 'growth'
               ? 'bg-white shadow-sm text-gray-900'
               : 'text-gray-500 hover:text-gray-700'

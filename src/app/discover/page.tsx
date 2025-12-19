@@ -141,7 +141,7 @@ export default function DiscoverPage() {
                   </AnimatePresence>
 
                   {/* Category */}
-                  <span className="absolute top-4 left-4 chip chip-accent text-xs">
+                  <span className="absolute top-4 left-4 chip chip-accent text-sm">
                     {currentAsset.category}
                   </span>
 
@@ -239,13 +239,13 @@ export default function DiscoverPage() {
                   </button>
 
                   {/* Category */}
-                  <span className="absolute bottom-3 left-3 chip chip-accent text-xs">
+                  <span className="absolute bottom-3 left-3 chip chip-accent text-sm">
                     {asset.category}
                   </span>
                 </div>
                 <div className="p-4">
                   <h3 className="font-semibold text-sm line-clamp-1">{asset.name}</h3>
-                  <p className="text-xs text-[var(--color-text-muted)] mt-1 line-clamp-2">
+                  <p className="text-sm text-[var(--color-text-muted)] mt-1 line-clamp-2">
                     {asset.shortDescription}
                   </p>
                 </div>

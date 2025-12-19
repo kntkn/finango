@@ -74,21 +74,21 @@ export default function AssetCard({ asset, index }: AssetCardProps) {
       {/* Content */}
       <div className="p-3 md:p-4">
         <h3 className="font-semibold text-sm line-clamp-1">{asset.name}</h3>
-        <p className="text-xs text-[var(--color-text-muted)] mt-1 line-clamp-2">
+        <p className="text-sm text-[var(--color-text-muted)] mt-1 line-clamp-2">
           {asset.shortDescription}
         </p>
 
         {/* Quick info */}
         <div className="flex items-center gap-2 mt-2 flex-wrap">
           <span className={`
-            px-2 py-0.5 rounded-full text-xs font-medium
+            px-2 py-0.5 rounded-full text-sm font-medium
             ${asset.aiInsights.liquidity === 'high' ? 'bg-green-100 text-green-700' :
               asset.aiInsights.liquidity === 'medium' ? 'bg-amber-100 text-amber-700' :
               'bg-red-100 text-red-700'}
           `}>
             {getLiquidityLabel()}
           </span>
-          <span className="text-xs text-[var(--color-text-muted)]">
+          <span className="text-sm text-[var(--color-text-muted)]">
             {getProjectTypeLabel()}
           </span>
         </div>

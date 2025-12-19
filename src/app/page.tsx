@@ -40,7 +40,7 @@ export default function Home() {
             <h1 className="font-display text-xl font-bold text-[var(--color-primary)] tracking-tight">finango</h1>
             <button
               onClick={toggleLocale}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--color-bg)] text-xs font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-border)] transition-colors duration-300"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--color-bg)] text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-border)] transition-colors duration-300"
             >
               <Globe size={12} />
               <span className="uppercase tracking-wide">{locale}</span>
@@ -62,7 +62,7 @@ export default function Home() {
             {/* Accent badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-accent)]/8 text-[var(--color-accent)] mb-6 stagger-1">
               <Sparkles size={14} />
-              <span className="text-xs font-semibold tracking-widest uppercase">
+              <span className="text-sm font-semibold tracking-widest uppercase">
                 {locale === 'ja' ? 'RWAキュレーション' : 'RWA Curation'}
               </span>
             </div>
@@ -116,7 +116,7 @@ export default function Home() {
                   <p className="font-display font-semibold text-sm text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors duration-300">
                     {locale === 'ja' ? cat.nameJa : cat.name}
                   </p>
-                  <p className="text-xs text-[var(--color-text-muted)] mt-1.5 flex items-center gap-1.5">
+                  <p className="text-sm text-[var(--color-text-muted)] mt-1.5 flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: cat.color }} />
                     {cat.assetCount} {locale === 'ja' ? '銘柄' : 'assets'}
                   </p>
@@ -162,14 +162,14 @@ export default function Home() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent" />
                     <button
                       onClick={(e) => handleLike(e, asset.id)}
-                      className={`absolute top-4 right-4 w-10 h-10 rounded-xl bg-white/90 backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm ${
+                      className={`absolute top-4 right-4 w-11 h-11 rounded-xl bg-white/90 backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm ${
                         isLiked(asset.id) ? 'text-rose-500' : 'text-[var(--color-text-muted)]'
                       } ${likeAnimation === asset.id ? 'animate-heart-pop' : ''}`}
                     >
                       <Heart size={18} fill={isLiked(asset.id) ? 'currentColor' : 'none'} />
                     </button>
                     <div className="absolute bottom-4 left-4 right-4">
-                      <span className="inline-block px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-lg text-xs font-semibold text-[var(--color-text)]">
+                      <span className="inline-block px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-lg text-sm font-semibold text-[var(--color-text)]">
                         {asset.category}
                       </span>
                     </div>
@@ -203,7 +203,7 @@ export default function Home() {
                       />
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <span className="text-xs text-[var(--color-accent)] font-semibold tracking-wide">
+                      <span className="text-sm text-[var(--color-accent)] font-semibold tracking-wide">
                         {asset.category}
                       </span>
                       <h3 className="font-display font-semibold text-sm text-[var(--color-text)] line-clamp-2 mt-1 group-hover:text-[var(--color-primary)] transition-colors duration-300">

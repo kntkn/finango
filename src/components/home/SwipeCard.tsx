@@ -133,17 +133,17 @@ export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
         {/* Category badge - Premium glass style */}
         <div className="absolute top-5 left-5 pointer-events-none">
           <span
-            className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white backdrop-blur-md shadow-sm"
+            className="px-3.5 py-1.5 rounded-xl text-sm font-semibold text-white backdrop-blur-md shadow-sm"
             style={{ backgroundColor: `${categoryColor}cc` }}
           >
             {asset.category}
           </span>
         </div>
 
-        {/* Tap to view indicator */}
+        {/* Tap to view indicator - DADS: 44px minimum */}
         <div className="absolute top-5 right-5 pointer-events-none">
-          <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-            <ArrowUpRight size={16} className="text-white" />
+          <div className="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+            <ArrowUpRight size={18} className="text-white" />
           </div>
         </div>
 
@@ -249,7 +249,7 @@ export function SwipeStack({ assets }: SwipeStackProps) {
           />
         ))}
         {assets.length > 10 && (
-          <span className="text-[var(--color-text-muted)] text-xs ml-1">+{assets.length - 10}</span>
+          <span className="text-[var(--color-text-muted)] text-sm ml-1">+{assets.length - 10}</span>
         )}
       </div>
     </div>

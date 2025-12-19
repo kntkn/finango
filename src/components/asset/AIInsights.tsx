@@ -35,7 +35,7 @@ export default function AIInsights({ asset }: AIInsightsProps) {
       low: t('common.low'),
     };
     return (
-      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${styles[level]}`}>
+      <span className={`px-2 py-0.5 rounded-full text-sm font-medium ${styles[level]}`}>
         {labels[level]}
       </span>
     );
@@ -91,7 +91,7 @@ export default function AIInsights({ asset }: AIInsightsProps) {
       {isExpanded && (
         <div className="px-5 pb-5 space-y-5">
           {/* Disclaimer */}
-          <p className="text-xs text-[var(--color-text-muted)] italic">
+          <p className="text-sm text-[var(--color-text-muted)] italic">
             {t('ai.disclaimer')}
           </p>
 
@@ -103,19 +103,19 @@ export default function AIInsights({ asset }: AIInsightsProps) {
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-[var(--color-surface)] rounded-xl p-3 text-center">
                 <Clock size={18} className="mx-auto mb-1 text-[var(--color-text-muted)]" />
-                <p className="text-xs text-[var(--color-text-muted)]">{t('ai.type')}</p>
+                <p className="text-sm text-[var(--color-text-muted)]">{t('ai.type')}</p>
                 <p className="text-sm font-medium mt-0.5">{getProjectTypeLabel(aiInsights.projectType)}</p>
               </div>
               <div className="bg-[var(--color-surface)] rounded-xl p-3 text-center">
                 <TrendingUp size={18} className="mx-auto mb-1 text-[var(--color-text-muted)]" />
-                <p className="text-xs text-[var(--color-text-muted)]">{t('ai.style')}</p>
+                <p className="text-sm text-[var(--color-text-muted)]">{t('ai.style')}</p>
                 <p className="text-sm font-medium mt-0.5">{getOrientationLabel(aiInsights.orientation)}</p>
               </div>
               <div className="bg-[var(--color-surface)] rounded-xl p-3 text-center">
                 <div className="flex justify-center mb-1">
                   {getLiquidityIcon(aiInsights.liquidity)}
                 </div>
-                <p className="text-xs text-[var(--color-text-muted)]">{t('ai.liquidity')}</p>
+                <p className="text-sm text-[var(--color-text-muted)]">{t('ai.liquidity')}</p>
                 <p className="text-sm font-medium mt-0.5">{getLiquidityLabel(aiInsights.liquidity)}</p>
               </div>
             </div>

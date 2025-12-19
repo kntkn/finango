@@ -78,7 +78,7 @@ export default function BottomNav() {
                   strokeWidth={isActive ? 2.2 : 1.8}
                 />
                 {item.badge && item.badge > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm animate-pulse">
+                  <span className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-sm font-bold rounded-full flex items-center justify-center shadow-sm animate-pulse">
                     {item.badge > 99 ? '99+' : item.badge}
                   </span>
                 )}
@@ -138,7 +138,7 @@ export default function BottomNav() {
                     strokeWidth={isActive ? 2.2 : 1.8}
                   />
                   {item.badge && item.badge > 0 && (
-                    <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
+                    <span className="absolute -top-2 -right-2 min-w-[20px] h-[20px] px-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-sm font-bold rounded-full flex items-center justify-center shadow-sm">
                       {item.badge > 99 ? '99+' : item.badge}
                     </span>
                   )}

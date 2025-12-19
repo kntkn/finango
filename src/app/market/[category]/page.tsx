@@ -86,7 +86,7 @@ export default function SecondaryMarketPage({ params }: MarketPageProps) {
           <div className="flex items-center gap-3">
             <Link
               href="/portfolio"
-              className="w-9 h-9 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] flex items-center justify-center hover:bg-[var(--color-border)] transition-colors"
+              className="w-11 h-11 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] flex items-center justify-center hover:bg-[var(--color-border)] transition-colors"
             >
               <ChevronLeft size={18} />
             </Link>
@@ -98,7 +98,7 @@ export default function SecondaryMarketPage({ params }: MarketPageProps) {
                 <Store size={18} className="text-emerald-600" />
                 <span>{locale === 'ja' ? '二次流通マーケット' : 'Secondary Market'}</span>
               </h1>
-              <p className="text-xs text-[var(--color-text-muted)] flex items-center gap-1.5">
+              <p className="text-sm text-[var(--color-text-muted)] flex items-center gap-1.5">
                 <CategoryIcon icon={category.icon} size={14} color={category.color} />
                 <span>{locale === 'ja' ? category.nameJa : category.name}</span>
               </p>
@@ -121,7 +121,7 @@ export default function SecondaryMarketPage({ params }: MarketPageProps) {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold flex items-center gap-3 text-[var(--color-text)]">
                 <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  className="w-11 h-11 rounded-lg flex items-center justify-center"
                   style={{ backgroundColor: `${category.color}15` }}
                 >
                   <CategoryIcon icon={category.icon} size={20} color={category.color} />
@@ -137,13 +137,13 @@ export default function SecondaryMarketPage({ params }: MarketPageProps) {
             </p>
             <div className="mt-4 pt-4 border-t border-[var(--color-border)] flex items-center gap-6">
               <div>
-                <p className="text-xs text-[var(--color-text-muted)]">
+                <p className="text-sm text-[var(--color-text-muted)]">
                   {locale === 'ja' ? '掲載数' : 'Listed'}
                 </p>
                 <p className="text-lg font-bold text-[var(--color-text)]">{assets.length}</p>
               </div>
               <div>
-                <p className="text-xs text-[var(--color-text-muted)]">
+                <p className="text-sm text-[var(--color-text-muted)]">
                   {locale === 'ja' ? '24h 取引量' : '24h Volume'}
                 </p>
                 <p className="text-lg font-bold text-[var(--color-text)]">
@@ -211,7 +211,7 @@ export default function SecondaryMarketPage({ params }: MarketPageProps) {
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
                         <span className={`
-                          px-2 py-0.5 rounded-full text-xs font-semibold
+                          px-2 py-0.5 rounded-full text-sm font-semibold
                           ${asset.aiInsights.liquidity === 'high' ? 'bg-emerald-100 text-emerald-700' :
                             asset.aiInsights.liquidity === 'medium' ? 'bg-amber-100 text-amber-700' :
                             'bg-rose-100 text-rose-700'}
@@ -229,7 +229,7 @@ export default function SecondaryMarketPage({ params }: MarketPageProps) {
                           {isPositive ? '+' : ''}{marketData.change.toFixed(1)}%
                         </span>
                       </div>
-                      <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                      <p className="text-sm text-[var(--color-text-muted)] mt-0.5">
                         Vol: {marketData.volume}
                       </p>
                     </div>
@@ -237,7 +237,7 @@ export default function SecondaryMarketPage({ params }: MarketPageProps) {
                     {/* Like Button */}
                     <button
                       onClick={(e) => handleLike(e, asset.id)}
-                      className={`w-9 h-9 rounded-full bg-[var(--color-bg)] flex items-center justify-center transition-all hover:scale-110 ${
+                      className={`w-11 h-11 rounded-full bg-[var(--color-bg)] flex items-center justify-center transition-all hover:scale-110 ${
                         isLiked(asset.id) ? 'text-rose-500' : 'text-[var(--color-text-muted)]'
                       } ${likeAnimation === asset.id ? 'animate-heart-pop' : ''}`}
                     >
@@ -282,7 +282,7 @@ export default function SecondaryMarketPage({ params }: MarketPageProps) {
 
           {/* Disclaimer */}
           <div className="mt-8 p-4 bg-[var(--color-bg)] rounded-xl border border-[var(--color-border)]">
-            <p className="text-xs text-[var(--color-text-muted)]">
+            <p className="text-sm text-[var(--color-text-muted)]">
               {locale === 'ja'
                 ? '※ 二次流通での売買は外部プラットフォームで行われます。取引にはリスクが伴います。'
                 : '※ Secondary market trades are conducted on external platforms. Trading involves risks.'}

@@ -27,7 +27,7 @@ export default function CategoryDetailClient({ category, assets }: CategoryDetai
           <div className="flex items-center gap-3">
             <Link
               href="/markets"
-              className="w-10 h-10 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center hover:bg-[var(--color-border)] transition-colors"
+              className="w-11 h-11 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center hover:bg-[var(--color-border)] transition-colors"
             >
               <ChevronLeft size={20} />
             </Link>
@@ -39,7 +39,7 @@ export default function CategoryDetailClient({ category, assets }: CategoryDetai
                 <CategoryIcon icon={category.icon} size={20} color={category.color} />
                 <span>{locale === 'ja' ? category.nameJa : category.name}</span>
               </h1>
-              <p className="text-xs text-[var(--color-text-muted)]">
+              <p className="text-sm text-[var(--color-text-muted)]">
                 {assets.length} {t('markets.assets')}
               </p>
             </div>
