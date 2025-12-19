@@ -425,6 +425,39 @@ h3 { font-size: 1.25rem; }
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+/* Marquee Animations for LP Hero */
+@keyframes marquee-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+@keyframes marquee-right {
+  0% {
+    transform: translateX(-33.333%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee-left {
+  animation: marquee-left 40s linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marquee-right 40s linear infinite;
+}
+
+/* Pause on hover */
+.animate-marquee-left:hover,
+.animate-marquee-right:hover {
+  animation-play-state: paused;
+}
+
 /* Stagger Animation - Auto Apply slideUp */
 .stagger-1 { animation: slideUp 0.6s var(--ease-out-expo) 0.05s forwards; opacity: 0; }
 .stagger-2 { animation: slideUp 0.6s var(--ease-out-expo) 0.1s forwards; opacity: 0; }

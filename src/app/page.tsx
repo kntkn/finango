@@ -3,32 +3,21 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useI18n } from '@/lib/i18n';
-import { useLikes } from '@/lib/likes';
-import { assets, categories } from '@/data/assets';
-import { ArrowRight, Heart, Globe, ChevronRight, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { assets } from '@/data/assets';
+import { ArrowRight, Globe } from 'lucide-react';
 import { SwipeStack } from '@/components/home/SwipeCard';
-import CategoryIcon from '@/components/ui/CategoryIcon';
 
 export default function Home() {
-  const { t, locale, setLocale } = useI18n();
-  const { isLiked, toggleLike } = useLikes();
-  const [likeAnimation, setLikeAnimation] = useState<string | null>(null);
+  const { locale, setLocale } = useI18n();
 
-  const featuredAssets = assets.slice(0, 6);
   const allAssets = assets;
-
-  const handleLike = (e: React.MouseEvent, assetId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleLike(assetId);
-    setLikeAnimation(assetId);
-    setTimeout(() => setLikeAnimation(null), 400);
-  };
 
   const toggleLocale = () => {
     setLocale(locale === 'en' ? 'ja' : 'en');
   };
+
+  // Create duplicated assets for infinite scroll effect
+  const marqueeAssets = [...assets, ...assets, ...assets];
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
@@ -54,185 +43,93 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Desktop: Grid Discovery Experience */}
-      <div className="hidden md:block">
-        {/* Hero Section - Premium Editorial Style */}
-        <section className="px-8 pt-12 pb-10 bg-gradient-to-b from-[var(--color-surface)] via-[var(--color-bg)] to-[var(--color-bg)]">
-          <div className="max-w-5xl mx-auto">
-            {/* Accent badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-accent)]/8 text-[var(--color-accent)] mb-6 stagger-1">
-              <Sparkles size={14} />
-              <span className="text-sm font-semibold tracking-widest uppercase">
-                {locale === 'ja' ? 'RWAキュレーション' : 'RWA Curation'}
-              </span>
-            </div>
+      {/* Desktop: LP Style Hero */}
+      <div className="hidden md:block min-h-screen overflow-hidden">
+        {/* Hero Section - Full Screen LP Style */}
+        <section className="relative min-h-screen flex flex-col">
+          {/* Background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-surface)] via-[var(--color-bg)] to-[var(--color-bg)]" />
 
-            <h1 className="font-display text-4xl lg:text-5xl font-bold text-[var(--color-text)] leading-[1.15] tracking-tight stagger-2 whitespace-pre-line">
-              {locale === 'ja'
-                ? '実物資産への\n新しい投資体験'
-                : 'A New Way to\nInvest in Real Assets'}
-            </h1>
-            <p className="mt-5 text-[var(--color-text-secondary)] text-base max-w-lg leading-relaxed stagger-3">
-              {locale === 'ja'
-                ? '厳選されたカーボンクレジット、ウイスキー樽、地域活性プロジェクトなど、多様な実物資産をご紹介します。'
-                : 'Explore curated carbon credits, whisky casks, regional revitalization projects, and more diverse real-world assets.'}
-            </p>
+          {/* Hero Content */}
+          <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 pt-20 pb-8">
+            <div className="text-center max-w-4xl mx-auto">
+              {/* Main Concept */}
+              <h1 className="font-display text-5xl lg:text-6xl xl:text-7xl font-bold text-[var(--color-text)] leading-[1.1] tracking-tight">
+                {locale === 'ja'
+                  ? '「好き」で溢れた\nポートフォリオ'
+                  : 'A Portfolio\nFull of What You Love'}
+              </h1>
 
-            {/* Premium CTA button */}
-            <Link
-              href="/search"
-              className="group inline-flex items-center gap-2.5 mt-8 px-6 py-3 bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-dark)] text-white rounded-xl text-sm font-semibold shadow-md hover:shadow-lg hover:translate-y-[-1px] transition-all duration-300 ease-[var(--ease-out-expo)] stagger-4"
-            >
-              <span>{locale === 'ja' ? 'マーケットを見る' : 'View Marketplace'}</span>
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
-            </Link>
-          </div>
-        </section>
+              <p className="mt-6 text-[var(--color-text-secondary)] text-lg max-w-2xl mx-auto leading-relaxed">
+                {locale === 'ja'
+                  ? 'ウイスキー、アート、不動産、カーボンクレジット。あなたの「好き」を資産に。'
+                  : 'Whisky, art, real estate, carbon credits. Turn your passions into assets.'}
+              </p>
 
-        {/* Categories - Premium Card Style */}
-        <section className="px-8 py-10">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="font-display text-xl font-bold text-[var(--color-text)] mb-6 tracking-tight">
-              {locale === 'ja' ? 'カテゴリ' : 'Categories'}
-            </h2>
-            <div className="grid grid-cols-5 gap-4">
-              {categories.map((cat, index) => (
-                <Link
-                  key={cat.id}
-                  href={`/markets/${cat.id}`}
-                  className={`group p-5 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] hover:border-transparent hover:shadow-[var(--shadow-card)] transition-all duration-500 ease-[var(--ease-out-expo)] stagger-${index + 1}`}
-                >
-                  <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-3 relative overflow-hidden"
-                    style={{ backgroundColor: `${cat.color}12` }}
-                  >
-                    {/* Hover gradient */}
-                    <div
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                      style={{ background: `linear-gradient(135deg, ${cat.color}20 0%, transparent 100%)` }}
-                    />
-                    <CategoryIcon icon={cat.icon} size={20} color={cat.color} />
-                  </div>
-                  <p className="font-display font-semibold text-sm text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors duration-300">
-                    {locale === 'ja' ? cat.nameJa : cat.name}
-                  </p>
-                  <p className="text-sm text-[var(--color-text-muted)] mt-1.5 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: cat.color }} />
-                    {cat.assetCount} {locale === 'ja' ? '銘柄' : 'assets'}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Featured Assets - Premium Editorial Style */}
-        <section className="px-8 py-10 bg-[var(--color-surface)]">
-          <div className="max-w-5xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-display text-xl font-bold text-[var(--color-text)] tracking-tight">
-                {locale === 'ja' ? '注目の銘柄' : 'Featured Assets'}
-              </h2>
+              {/* CTA Button */}
               <Link
                 href="/search"
-                className="group text-sm text-[var(--color-accent)] font-medium flex items-center gap-1 hover:gap-2 transition-all duration-300"
+                className="group inline-flex items-center gap-3 mt-10 px-8 py-4 bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-dark)] text-white rounded-2xl text-base font-semibold shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all duration-300 ease-[var(--ease-out-expo)]"
               >
-                {locale === 'ja' ? 'すべて見る' : 'View all'}
-                <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform duration-300" />
+                <span>{locale === 'ja' ? 'マーケットを見る' : 'View Marketplace'}</span>
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </div>
+          </div>
 
-            {/* Featured Grid - 2 large + 4 small */}
-            <div className="grid grid-cols-3 gap-5">
-              {/* Large Featured Cards */}
-              {featuredAssets.slice(0, 2).map((asset, index) => (
+          {/* Infinite Scrolling Asset Grid */}
+          <div className="relative z-10 w-full overflow-hidden pb-8">
+            {/* Gradient overlays for fade effect */}
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[var(--color-bg)] to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[var(--color-bg)] to-transparent z-10 pointer-events-none" />
+
+            {/* Row 1 - Scrolling Left */}
+            <div className="flex gap-4 mb-4 animate-marquee-left">
+              {marqueeAssets.map((asset, index) => (
                 <Link
-                  key={asset.id}
+                  key={`row1-${asset.id}-${index}`}
                   href={`/asset/${asset.id}`}
-                  className={`group col-span-1 bg-[var(--color-bg)] rounded-2xl overflow-hidden border border-[var(--color-border)] hover:border-transparent hover:shadow-[var(--shadow-card)] transition-all duration-500 ease-[var(--ease-out-expo)] stagger-${index + 1}`}
+                  className="flex-shrink-0 group"
                 >
-                  <div className="relative aspect-[4/3]">
+                  <div className="relative w-48 h-32 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
                     <Image
                       src={asset.image}
                       alt={asset.name}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-700 ease-[var(--ease-out-expo)]"
-                      sizes="33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="192px"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent" />
-                    <button
-                      onClick={(e) => handleLike(e, asset.id)}
-                      className={`absolute top-4 right-4 w-11 h-11 rounded-xl bg-white/90 backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm ${
-                        isLiked(asset.id) ? 'text-rose-500' : 'text-[var(--color-text-muted)]'
-                      } ${likeAnimation === asset.id ? 'animate-heart-pop' : ''}`}
-                    >
-                      <Heart size={18} fill={isLiked(asset.id) ? 'currentColor' : 'none'} />
-                    </button>
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <span className="inline-block px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-lg text-sm font-semibold text-[var(--color-text)]">
-                        {asset.category}
-                      </span>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <p className="text-white text-sm font-medium truncate">{asset.name}</p>
                     </div>
-                  </div>
-                  <div className="p-5">
-                    <h3 className="font-display font-semibold text-[var(--color-text)] line-clamp-1 group-hover:text-[var(--color-primary)] transition-colors duration-300">
-                      {asset.name}
-                    </h3>
-                    <p className="text-sm text-[var(--color-text-muted)] mt-2 line-clamp-2 leading-relaxed">
-                      {asset.shortDescription}
-                    </p>
                   </div>
                 </Link>
               ))}
-
-              {/* Small Cards Grid */}
-              <div className="col-span-1 grid grid-rows-2 gap-5">
-                {featuredAssets.slice(2, 4).map((asset, index) => (
-                  <Link
-                    key={asset.id}
-                    href={`/asset/${asset.id}`}
-                    className={`group flex gap-4 p-4 bg-[var(--color-bg)] rounded-2xl border border-[var(--color-border)] hover:border-transparent hover:shadow-[var(--shadow-card)] transition-all duration-500 ease-[var(--ease-out-expo)] stagger-${index + 3}`}
-                  >
-                    <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
-                      <Image
-                        src={asset.image}
-                        alt={asset.name}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                        sizes="80px"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <span className="text-sm text-[var(--color-accent)] font-semibold tracking-wide">
-                        {asset.category}
-                      </span>
-                      <h3 className="font-display font-semibold text-sm text-[var(--color-text)] line-clamp-2 mt-1 group-hover:text-[var(--color-primary)] transition-colors duration-300">
-                        {asset.name}
-                      </h3>
-                    </div>
-                  </Link>
-                ))}
-              </div>
             </div>
-          </div>
-        </section>
 
-        {/* Stats Section - Premium Trust Building */}
-        <section className="px-8 py-12">
-          <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-4 gap-6">
-              {[
-                { value: '¥2.5B+', labelEn: 'Total Volume', labelJa: '総取引額' },
-                { value: '10,000+', labelEn: 'Users', labelJa: 'ユーザー数' },
-                { value: '50+', labelEn: 'Listed Assets', labelJa: '掲載銘柄数' },
-                { value: '99.9%', labelEn: 'Uptime', labelJa: '稼働率' },
-              ].map((stat, i) => (
-                <div key={i} className={`text-center p-4 rounded-2xl bg-[var(--color-surface)]/50 stagger-${i + 1}`}>
-                  <p className="font-display text-3xl font-bold text-[var(--color-text)] tracking-tight">{stat.value}</p>
-                  <p className="text-sm text-[var(--color-text-muted)] mt-2">
-                    {locale === 'ja' ? stat.labelJa : stat.labelEn}
-                  </p>
-                </div>
+            {/* Row 2 - Scrolling Right */}
+            <div className="flex gap-4 animate-marquee-right">
+              {[...marqueeAssets].reverse().map((asset, index) => (
+                <Link
+                  key={`row2-${asset.id}-${index}`}
+                  href={`/asset/${asset.id}`}
+                  className="flex-shrink-0 group"
+                >
+                  <div className="relative w-48 h-32 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <Image
+                      src={asset.image}
+                      alt={asset.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="192px"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <p className="text-white text-sm font-medium truncate">{asset.name}</p>
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
