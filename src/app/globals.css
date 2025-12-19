@@ -458,6 +458,61 @@ h3 { font-size: 1.25rem; }
   animation-play-state: paused;
 }
 
+/* Multi-speed Marquee Animations for Full Background */
+@keyframes marquee-slow {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-slow-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes marquee-medium {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-medium-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes marquee-fast {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-fast-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-marquee-slow {
+  animation: marquee-slow 60s linear infinite;
+}
+
+.animate-marquee-slow-reverse {
+  animation: marquee-slow-reverse 65s linear infinite;
+}
+
+.animate-marquee-medium {
+  animation: marquee-medium 45s linear infinite;
+}
+
+.animate-marquee-medium-reverse {
+  animation: marquee-medium-reverse 50s linear infinite;
+}
+
+.animate-marquee-fast {
+  animation: marquee-fast 35s linear infinite;
+}
+
+.animate-marquee-fast-reverse {
+  animation: marquee-fast-reverse 38s linear infinite;
+}
+
 /* Stagger Animation - Auto Apply slideUp */
 .stagger-1 { animation: slideUp 0.6s var(--ease-out-expo) 0.05s forwards; opacity: 0; }
 .stagger-2 { animation: slideUp 0.6s var(--ease-out-expo) 0.1s forwards; opacity: 0; }

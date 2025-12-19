@@ -45,92 +45,179 @@ export default function Home() {
 
       {/* Desktop: LP Style Hero */}
       <div className="hidden md:block min-h-screen overflow-hidden">
-        {/* Hero Section - Full Screen LP Style */}
-        <section className="relative min-h-screen flex flex-col">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-surface)] via-[var(--color-bg)] to-[var(--color-bg)]" />
-
-          {/* Hero Content */}
-          <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 pt-20 pb-8">
-            <div className="text-center max-w-4xl mx-auto">
-              {/* Main Concept */}
-              <h1 className="font-display text-5xl lg:text-6xl xl:text-7xl font-bold text-[var(--color-text)] leading-[1.1] tracking-tight">
-                {locale === 'ja'
-                  ? '「好き」で溢れた\nポートフォリオ'
-                  : 'A Portfolio\nFull of What You Love'}
-              </h1>
-
-              <p className="mt-6 text-[var(--color-text-secondary)] text-lg max-w-2xl mx-auto leading-relaxed">
-                {locale === 'ja'
-                  ? 'ウイスキー、アート、不動産、カーボンクレジット。あなたの「好き」を資産に。'
-                  : 'Whisky, art, real estate, carbon credits. Turn your passions into assets.'}
-              </p>
-
-              {/* CTA Button */}
-              <Link
-                href="/search"
-                className="group inline-flex items-center gap-3 mt-10 px-8 py-4 bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-dark)] text-white rounded-2xl text-base font-semibold shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all duration-300 ease-[var(--ease-out-expo)]"
-              >
-                <span>{locale === 'ja' ? 'マーケットを見る' : 'View Marketplace'}</span>
-                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Infinite Scrolling Asset Grid */}
-          <div className="relative z-10 w-full overflow-hidden pb-8">
-            {/* Gradient overlays for fade effect */}
-            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[var(--color-bg)] to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[var(--color-bg)] to-transparent z-10 pointer-events-none" />
-
-            {/* Row 1 - Scrolling Left */}
-            <div className="flex gap-4 mb-4 animate-marquee-left">
-              {marqueeAssets.map((asset, index) => (
+        {/* Hero Section - Full Screen with Asset Background */}
+        <section className="relative min-h-screen">
+          {/* Full-screen scrolling asset background */}
+          <div className="absolute inset-0 overflow-hidden">
+            {/* Row 1 */}
+            <div className="flex gap-3 mb-3 animate-marquee-slow">
+              {[...marqueeAssets, ...marqueeAssets].map((asset, index) => (
                 <Link
                   key={`row1-${asset.id}-${index}`}
                   href={`/asset/${asset.id}`}
                   className="flex-shrink-0 group"
                 >
-                  <div className="relative w-48 h-32 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <div className="relative w-44 h-28 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
                     <Image
                       src={asset.image}
                       alt={asset.name}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      sizes="192px"
+                      className="object-cover"
+                      sizes="176px"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-2 left-2 right-2">
-                      <p className="text-white text-sm font-medium truncate">{asset.name}</p>
-                    </div>
                   </div>
                 </Link>
               ))}
             </div>
 
-            {/* Row 2 - Scrolling Right */}
-            <div className="flex gap-4 animate-marquee-right">
-              {[...marqueeAssets].reverse().map((asset, index) => (
+            {/* Row 2 */}
+            <div className="flex gap-3 mb-3 animate-marquee-slow-reverse">
+              {[...marqueeAssets].reverse().concat([...marqueeAssets].reverse()).map((asset, index) => (
                 <Link
                   key={`row2-${asset.id}-${index}`}
                   href={`/asset/${asset.id}`}
                   className="flex-shrink-0 group"
                 >
-                  <div className="relative w-48 h-32 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <div className="relative w-40 h-32 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
                     <Image
                       src={asset.image}
                       alt={asset.name}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      sizes="192px"
+                      className="object-cover"
+                      sizes="160px"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-2 left-2 right-2">
-                      <p className="text-white text-sm font-medium truncate">{asset.name}</p>
-                    </div>
                   </div>
                 </Link>
               ))}
+            </div>
+
+            {/* Row 3 */}
+            <div className="flex gap-3 mb-3 animate-marquee-medium">
+              {[...marqueeAssets, ...marqueeAssets].map((asset, index) => (
+                <Link
+                  key={`row3-${asset.id}-${index}`}
+                  href={`/asset/${asset.id}`}
+                  className="flex-shrink-0 group"
+                >
+                  <div className="relative w-48 h-36 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <Image
+                      src={asset.image}
+                      alt={asset.name}
+                      fill
+                      className="object-cover"
+                      sizes="192px"
+                    />
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Row 4 */}
+            <div className="flex gap-3 mb-3 animate-marquee-medium-reverse">
+              {[...marqueeAssets].reverse().concat([...marqueeAssets].reverse()).map((asset, index) => (
+                <Link
+                  key={`row4-${asset.id}-${index}`}
+                  href={`/asset/${asset.id}`}
+                  className="flex-shrink-0 group"
+                >
+                  <div className="relative w-36 h-28 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <Image
+                      src={asset.image}
+                      alt={asset.name}
+                      fill
+                      className="object-cover"
+                      sizes="144px"
+                    />
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Row 5 */}
+            <div className="flex gap-3 mb-3 animate-marquee-fast">
+              {[...marqueeAssets, ...marqueeAssets].map((asset, index) => (
+                <Link
+                  key={`row5-${asset.id}-${index}`}
+                  href={`/asset/${asset.id}`}
+                  className="flex-shrink-0 group"
+                >
+                  <div className="relative w-52 h-32 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <Image
+                      src={asset.image}
+                      alt={asset.name}
+                      fill
+                      className="object-cover"
+                      sizes="208px"
+                    />
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Row 6 */}
+            <div className="flex gap-3 mb-3 animate-marquee-fast-reverse">
+              {[...marqueeAssets].reverse().concat([...marqueeAssets].reverse()).map((asset, index) => (
+                <Link
+                  key={`row6-${asset.id}-${index}`}
+                  href={`/asset/${asset.id}`}
+                  className="flex-shrink-0 group"
+                >
+                  <div className="relative w-44 h-36 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <Image
+                      src={asset.image}
+                      alt={asset.name}
+                      fill
+                      className="object-cover"
+                      sizes="176px"
+                    />
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Row 7 */}
+            <div className="flex gap-3 animate-marquee-slow">
+              {[...marqueeAssets, ...marqueeAssets].map((asset, index) => (
+                <Link
+                  key={`row7-${asset.id}-${index}`}
+                  href={`/asset/${asset.id}`}
+                  className="flex-shrink-0 group"
+                >
+                  <div className="relative w-40 h-28 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <Image
+                      src={asset.image}
+                      alt={asset.name}
+                      fill
+                      className="object-cover"
+                      sizes="160px"
+                    />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Overlay gradient for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/70 to-white/90 pointer-events-none" />
+
+          {/* Hero Content - Centered */}
+          <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-8">
+            <div className="text-center max-w-4xl mx-auto">
+              {/* Main Concept */}
+              <h1 className="font-display text-5xl lg:text-6xl xl:text-7xl font-bold text-[var(--color-text)] leading-[1.1] tracking-tight drop-shadow-sm whitespace-pre-line">
+                {locale === 'ja'
+                  ? '「好き」で溢れた\nポートフォリオ'
+                  : 'A Portfolio\nFull of What You Love'}
+              </h1>
+
+              {/* CTA Button */}
+              <Link
+                href="/search"
+                className="group inline-flex items-center gap-3 mt-12 px-10 py-5 bg-gradient-to-r from-[var(--color-accent)] to-[var(--color-accent-dark)] text-white rounded-2xl text-lg font-bold shadow-xl hover:shadow-2xl hover:translate-y-[-3px] transition-all duration-300 ease-[var(--ease-out-expo)]"
+              >
+                <span>{locale === 'ja' ? 'マーケットを見る' : 'View Marketplace'}</span>
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform duration-300" />
+              </Link>
             </div>
           </div>
         </section>
