@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getAssetById, assets, getCategoryById } from '@/data/assets';
+import { getAssetById, assets, getProjectByAsset } from '@/data/projects';
 import AssetDetailClient from './AssetDetailClient';
 
 interface AssetPageProps {
@@ -14,9 +14,9 @@ export default async function AssetPage({ params }: AssetPageProps) {
     notFound();
   }
 
-  const category = getCategoryById(asset.categoryId);
+  const project = getProjectByAsset(asset.id);
 
-  return <AssetDetailClient asset={asset} category={category} />;
+  return <AssetDetailClient asset={asset} project={project} />;
 }
 
 export async function generateStaticParams() {

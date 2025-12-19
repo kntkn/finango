@@ -2,21 +2,32 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Asset, Category } from '@/data/assets';
+import { Asset, Project } from '@/data/projects';
 import { useI18n } from '@/lib/i18n';
 import { useLikes } from '@/lib/likes';
-import AIInsights from '@/components/asset/AIInsights';
-import { ChevronLeft, ExternalLink, Heart, Share2, Check, Globe } from 'lucide-react';
+import { ChevronLeft, ExternalLink, Heart, Share2, Check, Globe, Wine, Leaf, Sparkles, Home, Palmtree, Mountain, Flag, Rocket, Clapperboard, ShoppingCart, TrendingUp, Users } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string; color?: string }>> = {
+  wine: Wine,
+  leaf: Leaf,
+  sparkles: Sparkles,
+  home: Home,
+  palmtree: Palmtree,
+  mountain: Mountain,
+  flag: Flag,
+  rocket: Rocket,
+  clapperboard: Clapperboard,
+};
+
 interface AssetDetailClientProps {
   asset: Asset;
-  category: Category | undefined;
+  project: Project | undefined;
 }
 
-export default function AssetDetailClient({ asset, category }: AssetDetailClientProps) {
-  const { t, locale, setLocale } = useI18n();
+export default function AssetDetailClient({ asset, project }: AssetDetailClientProps) {
+  const { locale, setLocale } = useI18n();
   const { isLiked, toggleLike } = useLikes();
   const [showShareToast, setShowShareToast] = useState(false);
   const [likeAnimation, setLikeAnimation] = useState(false);
@@ -29,8 +40,8 @@ export default function AssetDetailClient({ asset, category }: AssetDetailClient
 
   const handleShare = async () => {
     const shareData = {
-      title: asset.name,
-      text: asset.shortDescription,
+      title: locale === 'ja' ? asset.nameJa : asset.name,
+      text: locale === 'ja' ? asset.descriptionJa : asset.description,
       url: window.location.href,
     };
 
@@ -51,25 +62,31 @@ export default function AssetDetailClient({ asset, category }: AssetDetailClient
     setLocale(locale === 'en' ? 'ja' : 'en');
   };
 
-  const whyConsiderPoints = locale === 'ja'
-    ? [
-        '理解しやすい実物資産への投資',
-        '目的が明確な透明性のあるプロジェクト',
-        'ANGOが厳選した投資機会',
-      ]
-    : [
-        'Tangible real-world impact you can understand',
-        'Transparent project with clear objectives',
-        'Part of a curated selection from ANGO',
-      ];
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat(locale === 'ja' ? 'ja-JP' : 'en-US', {
+      style: 'currency',
+      currency: 'JPY',
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
+  const soldPercentage = Math.round((asset.sold / (asset.available + asset.sold)) * 100);
+  const IconComponent = project ? (iconMap[project.icon] || Sparkles) : Sparkles;
+
+  const categoryLabels = {
+    membership: { en: 'Membership', ja: 'メンバーシップ' },
+    nft: { en: 'NFT', ja: 'NFT' },
+    investment: { en: 'Investment', ja: '投資' },
+    experience: { en: 'Experience', ja: '体験' },
+  };
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="min-h-screen bg-[var(--color-bg)] pb-24 md:pb-8">
       {/* Header - Fixed */}
       <header className="fixed top-0 left-0 right-0 z-50 px-4 py-3 md:pl-24">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link
-            href={`/markets/${asset.categoryId}`}
+            href={project ? `/project/${project.id}` : '/search'}
             className="w-11 h-11 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/40 transition-colors"
           >
             <ChevronLeft size={20} />
@@ -108,7 +125,7 @@ export default function AssetDetailClient({ asset, category }: AssetDetailClient
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-[var(--color-text)] text-[var(--color-bg)] text-sm font-medium flex items-center gap-2"
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-[var(--color-ink)] text-white text-sm font-medium flex items-center gap-2"
           >
             <Check size={16} />
             {locale === 'ja' ? 'リンクをコピーしました' : 'Link copied'}
@@ -120,7 +137,7 @@ export default function AssetDetailClient({ asset, category }: AssetDetailClient
       <div className="relative aspect-[4/3] md:aspect-[21/9] w-full">
         <Image
           src={asset.image}
-          alt={asset.name}
+          alt={locale === 'ja' ? asset.nameJa : asset.name}
           fill
           className="object-cover"
           priority
@@ -128,104 +145,227 @@ export default function AssetDetailClient({ asset, category }: AssetDetailClient
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)] via-transparent to-transparent" />
 
-        {/* Category Badge */}
-        {category && (
-          <div className="absolute bottom-6 left-4 md:left-1/2 md:-translate-x-1/2">
-            <span
-              className="px-4 py-2 rounded-full text-sm font-medium text-white shadow-lg"
-              style={{ backgroundColor: category.color }}
-            >
-              {category.icon} {locale === 'ja' ? category.nameJa : category.name}
+        {/* Project Badge */}
+        {project && (
+          <Link
+            href={`/project/${project.id}`}
+            className="absolute bottom-6 left-4 md:left-1/2 md:-translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm text-white shadow-lg hover:opacity-90 transition-opacity"
+            style={{ backgroundColor: `${project.color}cc` }}
+          >
+            <IconComponent size={16} />
+            <span className="text-sm font-medium">
+              {locale === 'ja' ? project.nameJa : project.name}
             </span>
-          </div>
+          </Link>
         )}
       </div>
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 md:px-8 -mt-4 relative z-10">
-        {/* Title & Description */}
+        {/* Title & Price */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6"
         >
-          <h1 className="text-2xl md:text-4xl font-bold leading-tight">{asset.name}</h1>
-          <p className="text-[var(--color-text-secondary)] mt-2 md:text-lg">
-            {asset.shortDescription}
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="text-2xl md:text-3xl font-bold leading-tight text-[var(--color-ink)]">
+              {locale === 'ja' ? asset.nameJa : asset.name}
+            </h1>
+            <div className="text-right flex-shrink-0">
+              <p className="text-2xl md:text-3xl font-bold" style={{ color: project?.color || 'var(--color-primary)' }}>
+                {formatPrice(asset.price)}
+              </p>
+              <p className="text-sm text-[var(--color-ink-muted)]">
+                / {locale === 'ja' ? asset.unitJa : asset.unit}
+              </p>
+            </div>
+          </div>
         </motion.div>
 
-        {/* Story Section */}
+        {/* Stats Cards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-8"
+          className="grid grid-cols-3 gap-3 mb-6"
         >
-          <h2 className="text-lg font-semibold mb-3">{t('asset.story')}</h2>
-          <p className="text-[var(--color-text-secondary)] leading-relaxed">
-            {asset.story}
-          </p>
+          <div className="bg-white rounded-xl border border-[var(--color-border)] p-4 text-center">
+            <div className="w-8 h-8 rounded-lg bg-[var(--color-bg)] flex items-center justify-center mx-auto mb-2">
+              <ShoppingCart size={16} className="text-[var(--color-ink-muted)]" />
+            </div>
+            <p className="text-lg font-bold text-[var(--color-ink)]">{asset.sold}</p>
+            <p className="text-xs text-[var(--color-ink-muted)]">
+              {locale === 'ja' ? '販売済' : 'Sold'}
+            </p>
+          </div>
+          <div className="bg-white rounded-xl border border-[var(--color-border)] p-4 text-center">
+            <div className="w-8 h-8 rounded-lg bg-[var(--color-bg)] flex items-center justify-center mx-auto mb-2">
+              <Users size={16} className="text-[var(--color-ink-muted)]" />
+            </div>
+            <p className="text-lg font-bold text-[var(--color-ink)]">{asset.available}</p>
+            <p className="text-xs text-[var(--color-ink-muted)]">
+              {locale === 'ja' ? '残り' : 'Available'}
+            </p>
+          </div>
+          <div className="bg-white rounded-xl border border-[var(--color-border)] p-4 text-center">
+            <div className="w-8 h-8 rounded-lg bg-[var(--color-bg)] flex items-center justify-center mx-auto mb-2">
+              <TrendingUp size={16} className="text-[var(--color-ink-muted)]" />
+            </div>
+            <p className="text-lg font-bold" style={{ color: project?.color || 'var(--color-primary)' }}>
+              {soldPercentage}%
+            </p>
+            <p className="text-xs text-[var(--color-ink-muted)]">
+              {locale === 'ja' ? '達成率' : 'Progress'}
+            </p>
+          </div>
         </motion.div>
 
-        {/* Two Column Layout on Desktop */}
-        <div className="md:grid md:grid-cols-2 md:gap-6">
-          {/* AI Insights */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mb-8"
-          >
-            <AIInsights asset={asset} />
-          </motion.div>
-
-          {/* Why This Asset */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mb-8"
-          >
-            <div className="h-full p-5 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]">
-              <h2 className="text-lg font-semibold mb-4">{t('asset.why')}</h2>
-              <ul className="space-y-3 text-[var(--color-text-secondary)]">
-                {whyConsiderPoints.map((point, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-accent-bg)] flex items-center justify-center">
-                      <Check size={14} className="text-[var(--color-accent)]" />
-                    </span>
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
+        {/* Progress Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mb-6"
+        >
+          <div className="bg-white rounded-xl border border-[var(--color-border)] p-4">
+            <div className="flex items-center justify-between text-sm mb-2">
+              <span className="text-[var(--color-ink-secondary)]">
+                {locale === 'ja' ? '販売進捗' : 'Sales Progress'}
+              </span>
+              <span className="font-semibold" style={{ color: project?.color || 'var(--color-primary)' }}>
+                {asset.sold} / {asset.sold + asset.available}
+              </span>
             </div>
+            <div className="h-3 bg-[var(--color-border)] rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${soldPercentage}%` }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                className="h-full rounded-full"
+                style={{ backgroundColor: project?.color || 'var(--color-primary)' }}
+              />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Description */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-6"
+        >
+          <div className="bg-white rounded-xl border border-[var(--color-border)] p-5">
+            <h2 className="text-lg font-semibold mb-3 text-[var(--color-ink)]">
+              {locale === 'ja' ? '商品説明' : 'Description'}
+            </h2>
+            <p className="text-[var(--color-ink-secondary)] leading-relaxed">
+              {locale === 'ja' ? asset.descriptionJa : asset.description}
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Project Info */}
+        {project && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="mb-6"
+          >
+            <Link
+              href={`/project/${project.id}`}
+              className="block bg-white rounded-xl border border-[var(--color-border)] p-5 hover:border-[var(--color-primary)]/30 hover:shadow-md transition-all group"
+            >
+              <div className="flex items-center gap-4">
+                <div
+                  className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: `${project.color}15` }}
+                >
+                  <IconComponent size={24} color={project.color} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span
+                      className="px-2 py-0.5 rounded text-xs font-medium text-white"
+                      style={{ backgroundColor: project.color }}
+                    >
+                      {locale === 'ja' ? categoryLabels[project.category].ja : categoryLabels[project.category].en}
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-[var(--color-ink)] group-hover:text-[var(--color-primary)] transition-colors">
+                    {locale === 'ja' ? project.nameJa : project.name}
+                  </h3>
+                  <p className="text-sm text-[var(--color-ink-muted)] line-clamp-1">
+                    {locale === 'ja' ? project.descriptionJa : project.description}
+                  </p>
+                </div>
+                <ChevronLeft size={20} className="text-[var(--color-ink-muted)] rotate-180 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+              </div>
+            </Link>
           </motion.div>
-        </div>
+        )}
+
+        {/* Why Consider */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-8"
+        >
+          <div className="bg-white rounded-xl border border-[var(--color-border)] p-5">
+            <h2 className="text-lg font-semibold mb-4 text-[var(--color-ink)]">
+              {locale === 'ja' ? 'おすすめポイント' : 'Why Consider This Asset'}
+            </h2>
+            <ul className="space-y-3">
+              {(locale === 'ja'
+                ? [
+                    '理解しやすい実物資産への投資',
+                    '目的が明確な透明性のあるプロジェクト',
+                    'ANGOが厳選した投資機会',
+                  ]
+                : [
+                    'Tangible real-world impact you can understand',
+                    'Transparent project with clear objectives',
+                    'Part of a curated selection from ANGO',
+                  ]
+              ).map((point, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <span
+                    className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: `${project?.color || 'var(--color-primary)'}15` }}
+                  >
+                    <Check size={14} style={{ color: project?.color || 'var(--color-primary)' }} />
+                  </span>
+                  <span className="text-[var(--color-ink-secondary)]">{point}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </motion.div>
 
         {/* CTA Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.35 }}
           className="mb-8 md:max-w-md md:mx-auto"
         >
           <a
             href={asset.externalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="
-              flex items-center justify-center gap-2 w-full py-4 px-6
-              bg-[var(--color-accent)] text-white rounded-2xl
-              font-semibold text-base hover:opacity-90 transition-all
-              hover:shadow-lg hover:shadow-[var(--color-accent)]/20
-            "
+            className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-xl font-semibold text-base text-white hover:opacity-90 transition-all hover:shadow-lg"
+            style={{ backgroundColor: project?.color || 'var(--color-primary)' }}
           >
-            <span>{t('asset.viewOnAngo')}</span>
+            <span>{locale === 'ja' ? 'ANGOで購入する' : 'Buy on ANGO'}</span>
             <ExternalLink size={18} />
           </a>
-          <p className="text-center text-sm text-[var(--color-text-muted)] mt-3">
-            {t('asset.secureNote')}
+          <p className="text-center text-sm text-[var(--color-ink-muted)] mt-3">
+            {locale === 'ja'
+              ? '安全な決済・ブロックチェーン認証'
+              : 'Secure payment & blockchain verified'}
           </p>
         </motion.div>
       </div>
