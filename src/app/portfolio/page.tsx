@@ -3,10 +3,11 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { mockPortfolio, mockTokens, getAssetById, getProjectByAsset, projects } from '@/data/projects';
+import { mockPortfolio, mockTokens, tokenBenefits, getBenefitsByToken, getAssetById, getProjectByAsset, projects } from '@/data/projects';
 import { useI18n } from '@/lib/i18n';
 import PortfolioChart from '@/components/portfolio/PortfolioChart';
-import { ChevronRight, ExternalLink, Globe, Briefcase, TrendingUp, Flag, Coins, Wallet, MessageCircle, Bell, CheckCircle, Wine, Leaf, Sparkles, Home, Palmtree, Mountain, Rocket, Clapperboard } from 'lucide-react';
+import { ChevronRight, ChevronDown, ExternalLink, Globe, Briefcase, TrendingUp, Flag, Coins, Wallet, MessageCircle, Bell, CheckCircle, Wine, Leaf, Sparkles, Home, Palmtree, Mountain, Rocket, Clapperboard, Gift, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string; color?: string }>> = {
   wine: Wine,
@@ -23,6 +24,8 @@ const iconMap: Record<string, React.ComponentType<{ size?: number; className?: s
 export default function PortfolioPage() {
   const { t, locale, setLocale } = useI18n();
   const [lineConnected, setLineConnected] = useState(false);
+  const [showLineSection, setShowLineSection] = useState(false);
+  const [expandedToken, setExpandedToken] = useState<string | null>(null);
 
   // Calculate portfolio data
   const portfolioData = useMemo(() => {
@@ -57,19 +60,13 @@ export default function PortfolioPage() {
       };
     });
 
-    // Cash equivalent (RWA holdings value)
-    const cashEquivalent = items.reduce((sum, item) => sum + item.totalValue, 0);
-
-    // Token total value
-    const tokenTotalValue = mockTokens.reduce((sum, token) => sum + (token.balance * token.valuePerToken), 0);
-
-    // Total portfolio value
-    const total = cashEquivalent + tokenTotalValue;
+    // RWA Total (yen-based, no tokens)
+    const rwaTotal = items.reduce((sum, item) => sum + item.totalValue, 0);
 
     // Get unique projects from portfolio
     const uniqueProjects = [...new Set(items.map(item => item.project?.id))].filter(Boolean);
 
-    return { items, chartData, cashEquivalent, tokenTotalValue, total, uniqueProjects };
+    return { items, chartData, rwaTotal, uniqueProjects };
   }, [locale]);
 
   const formatCurrency = (value: number) => {
@@ -93,8 +90,11 @@ export default function PortfolioPage() {
   };
 
   const handleLineConnect = () => {
-    // Mock LINE connection
     setLineConnected(true);
+  };
+
+  const toggleTokenExpand = (tokenId: string) => {
+    setExpandedToken(expandedToken === tokenId ? null : tokenId);
   };
 
   return (
@@ -118,136 +118,26 @@ export default function PortfolioPage() {
         <div className="max-w-4xl mx-auto">
           {portfolioData.items.length > 0 || mockTokens.length > 0 ? (
             <>
-              {/* LINE Integration Section */}
-              <section className="mb-6">
-                <div className={`bg-white rounded-xl border ${lineConnected ? 'border-green-200' : 'border-[var(--color-border)]'} p-5`}>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${lineConnected ? 'bg-green-100' : 'bg-[#06C755]/10'}`}>
-                      <MessageCircle size={20} className={lineConnected ? 'text-green-600' : 'text-[#06C755]'} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-[var(--color-ink)]">
-                        {locale === 'ja' ? 'LINE連携' : 'LINE Integration'}
-                      </h3>
-                      <p className="text-xs text-[var(--color-ink-muted)]">
-                        {lineConnected
-                          ? (locale === 'ja' ? '連携済み' : 'Connected')
-                          : (locale === 'ja' ? '未連携' : 'Not connected')}
-                      </p>
-                    </div>
-                    {lineConnected && (
-                      <CheckCircle size={20} className="text-green-500" />
-                    )}
-                  </div>
-
-                  {!lineConnected ? (
-                    <>
-                      <button
-                        onClick={handleLineConnect}
-                        className="w-full py-3 px-4 bg-[#06C755] text-white rounded-xl font-semibold text-sm hover:bg-[#05b04c] transition-colors flex items-center justify-center gap-2 mb-3"
-                      >
-                        <MessageCircle size={18} />
-                        {locale === 'ja' ? 'LINEで連携する' : 'Connect with LINE'}
-                      </button>
-                      <ul className="space-y-1.5 text-xs text-[var(--color-ink-muted)]">
-                        <li className="flex items-center gap-2">
-                          <Bell size={12} />
-                          {locale === 'ja' ? '購入通知を受け取れます' : 'Receive purchase notifications'}
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <TrendingUp size={12} />
-                          {locale === 'ja' ? '価格変動アラート' : 'Price change alerts'}
-                        </li>
-                      </ul>
-                    </>
-                  ) : (
-                    <p className="text-sm text-[var(--color-ink-secondary)]">
-                      {locale === 'ja'
-                        ? '購入通知と価格変動アラートを受け取ります。'
-                        : 'You will receive purchase notifications and price alerts.'}
-                    </p>
-                  )}
-                </div>
-              </section>
-
-              {/* Total Value Card */}
-              <section className="mb-6">
+              {/* ============================================ */}
+              {/* SECTION 1: RWA TOTAL ASSETS (Yen-based) */}
+              {/* ============================================ */}
+              <section className="mb-8">
                 <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
                   <div className="flex items-center gap-2 mb-3">
-                    <Flag size={14} className="text-[var(--color-primary)]" />
+                    <Wallet size={16} className="text-[var(--color-primary)]" />
                     <span className="text-sm font-semibold text-[var(--color-primary)]">
-                      {locale === 'ja' ? '総資産' : 'Total Assets'}
+                      {locale === 'ja' ? 'RWA総資産' : 'RWA Total Assets'}
                     </span>
                   </div>
-                  <p className="text-3xl font-bold text-[var(--color-ink)] tracking-tight mb-4">
-                    {formatCurrency(portfolioData.total)}
+                  <p className="text-3xl font-bold text-[var(--color-ink)] tracking-tight mb-2">
+                    {formatCurrency(portfolioData.rwaTotal)}
+                  </p>
+                  <p className="text-sm text-[var(--color-ink-muted)] mb-4">
+                    {locale === 'ja' ? '現金相当の評価額' : 'Cash equivalent value'}
                   </p>
 
-                  {/* Cash vs Token Split - Desktop side by side, Mobile stacked */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-[var(--color-border)]">
-                    {/* Cash Equivalent */}
-                    <div className="bg-[var(--color-bg)] rounded-xl p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Wallet size={16} className="text-[var(--color-ink-muted)]" />
-                        <span className="text-sm font-medium text-[var(--color-ink-secondary)]">
-                          {locale === 'ja' ? '現金相当（RWA評価額）' : 'Cash Equivalent (RWA Value)'}
-                        </span>
-                      </div>
-                      <p className="text-xl font-bold text-[var(--color-ink)]">
-                        {formatCurrency(portfolioData.cashEquivalent)}
-                      </p>
-                      <div className="mt-2 h-1.5 bg-[var(--color-border)] rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-[var(--color-primary)] rounded-full"
-                          style={{ width: `${(portfolioData.cashEquivalent / portfolioData.total) * 100}%` }}
-                        />
-                      </div>
-                      <p className="text-xs text-[var(--color-ink-muted)] mt-1">
-                        {Math.round((portfolioData.cashEquivalent / portfolioData.total) * 100)}%
-                      </p>
-                    </div>
-
-                    {/* Token Holdings */}
-                    <div className="bg-[var(--color-bg)] rounded-xl p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Coins size={16} className="text-[var(--color-ink-muted)]" />
-                        <span className="text-sm font-medium text-[var(--color-ink-secondary)]">
-                          {locale === 'ja' ? 'トークン保有' : 'Token Holdings'}
-                        </span>
-                      </div>
-                      <p className="text-xl font-bold text-[var(--color-ink)]">
-                        {formatCurrency(portfolioData.tokenTotalValue)}
-                      </p>
-
-                      {/* Token List */}
-                      <div className="mt-3 space-y-2">
-                        {mockTokens.map((token) => (
-                          <div key={token.tokenId} className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <div
-                                className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                                style={{ backgroundColor: token.color }}
-                              >
-                                {token.symbol[0]}
-                              </div>
-                              <span className="text-sm text-[var(--color-ink-secondary)]">{token.name}</span>
-                            </div>
-                            <div className="text-right">
-                              <span className="text-sm font-semibold text-[var(--color-ink)]">
-                                {token.balance.toLocaleString()}
-                              </span>
-                              <span className="text-xs text-[var(--color-ink-muted)] ml-1">
-                                ({formatCurrency(token.balance * token.valuePerToken)})
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Stats Row */}
-                  <div className="flex items-center gap-5 mt-4 pt-4 border-t border-[var(--color-border)]">
+                  <div className="flex items-center gap-5 pt-4 border-t border-[var(--color-border)]">
                     <div>
                       <p className="text-xs text-[var(--color-ink-muted)]">{locale === 'ja' ? '保有銘柄' : 'Holdings'}</p>
                       <p className="text-lg font-semibold text-[var(--color-ink)]">{portfolioData.items.length}</p>
@@ -272,7 +162,7 @@ export default function PortfolioPage() {
                 <div className="bg-white rounded-xl border border-[var(--color-border)] p-5">
                   <PortfolioChart
                     data={portfolioData.chartData}
-                    total={portfolioData.cashEquivalent}
+                    total={portfolioData.rwaTotal}
                   />
                 </div>
               </section>
@@ -359,8 +249,174 @@ export default function PortfolioPage() {
                 </div>
               </section>
 
+              {/* ============================================ */}
+              {/* SECTION 2: COMMUNITY TOKENS (Experience Exchange) */}
+              {/* ============================================ */}
+              <section className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <Coins size={18} className="text-[var(--color-ink)]" />
+                  <h2 className="text-base font-semibold text-[var(--color-ink)]">
+                    {locale === 'ja' ? 'コミュニティトークン' : 'Community Tokens'}
+                  </h2>
+                </div>
+                <p className="text-sm text-[var(--color-ink-muted)] mb-4 -mt-2">
+                  {locale === 'ja'
+                    ? '体験や特典と交換できるトークンです'
+                    : 'Exchange tokens for experiences and benefits'}
+                </p>
+
+                <div className="space-y-4">
+                  {mockTokens.map((token) => {
+                    const benefits = getBenefitsByToken(token.tokenId);
+                    const TokenIcon = iconMap[token.icon] || Coins;
+                    const isExpanded = expandedToken === token.tokenId;
+
+                    return (
+                      <div
+                        key={token.tokenId}
+                        className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden"
+                      >
+                        {/* Token Header */}
+                        <button
+                          onClick={() => toggleTokenExpand(token.tokenId)}
+                          className="w-full flex items-center gap-4 p-4 hover:bg-[var(--color-bg)] transition-colors text-left"
+                        >
+                          <div
+                            className="w-12 h-12 rounded-xl flex items-center justify-center"
+                            style={{ backgroundColor: `${token.color}15` }}
+                          >
+                            <TokenIcon size={24} color={token.color} />
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-[var(--color-ink)]">
+                                {token.name}
+                              </h3>
+                              <span
+                                className="px-2 py-0.5 rounded-full text-xs font-semibold text-white"
+                                style={{ backgroundColor: token.color }}
+                              >
+                                {token.symbol}
+                              </span>
+                            </div>
+                            <p className="text-sm text-[var(--color-ink-muted)] mt-0.5">
+                              {locale === 'ja'
+                                ? `${benefits.length}件の特典と交換可能`
+                                : `${benefits.length} benefits available`}
+                            </p>
+                          </div>
+
+                          <div className="text-right">
+                            <p className="text-xl font-bold" style={{ color: token.color }}>
+                              {token.balance.toLocaleString()}
+                            </p>
+                            <p className="text-xs text-[var(--color-ink-muted)]">
+                              {locale === 'ja' ? '保有数' : 'tokens'}
+                            </p>
+                          </div>
+
+                          <motion.div
+                            animate={{ rotate: isExpanded ? 180 : 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ChevronDown size={20} className="text-[var(--color-ink-muted)]" />
+                          </motion.div>
+                        </button>
+
+                        {/* Benefits List (Expandable) */}
+                        <AnimatePresence>
+                          {isExpanded && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="px-4 pb-4 border-t border-[var(--color-border)]">
+                                <p className="text-xs font-semibold text-[var(--color-ink-muted)] uppercase tracking-wide pt-3 pb-2">
+                                  {locale === 'ja' ? '交換できる特典' : 'Available Benefits'}
+                                </p>
+                                <div className="space-y-2">
+                                  {benefits.map((benefit) => {
+                                    const canAfford = token.balance >= benefit.cost;
+                                    return (
+                                      <div
+                                        key={benefit.id}
+                                        className={`flex items-center gap-3 p-3 rounded-xl border ${
+                                          canAfford
+                                            ? 'border-[var(--color-border)] bg-[var(--color-bg)]'
+                                            : 'border-gray-200 bg-gray-50 opacity-60'
+                                        }`}
+                                      >
+                                        <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                                          <Image
+                                            src={benefit.image}
+                                            alt={locale === 'ja' ? benefit.nameJa : benefit.name}
+                                            fill
+                                            className="object-cover"
+                                            sizes="48px"
+                                          />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <p className="font-semibold text-sm text-[var(--color-ink)]">
+                                            {locale === 'ja' ? benefit.nameJa : benefit.name}
+                                          </p>
+                                          <p className="text-xs text-[var(--color-ink-muted)] line-clamp-1">
+                                            {locale === 'ja' ? benefit.descriptionJa : benefit.description}
+                                          </p>
+                                        </div>
+                                        <div className="flex flex-col items-end gap-1">
+                                          <span
+                                            className="font-bold text-sm"
+                                            style={{ color: token.color }}
+                                          >
+                                            {benefit.cost} {token.symbol}
+                                          </span>
+                                          {canAfford ? (
+                                            <button
+                                              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-opacity hover:opacity-90"
+                                              style={{ backgroundColor: token.color }}
+                                            >
+                                              <Gift size={12} />
+                                              {locale === 'ja' ? '交換' : 'Redeem'}
+                                            </button>
+                                          ) : (
+                                            <span className="text-xs text-[var(--color-ink-muted)]">
+                                              {locale === 'ja' ? '残高不足' : 'Insufficient'}
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+
+                                {/* View All Benefits Link */}
+                                <Link
+                                  href={`/tokens/${token.tokenId}`}
+                                  className="flex items-center justify-center gap-2 w-full mt-3 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                                  style={{
+                                    backgroundColor: `${token.color}10`,
+                                    color: token.color,
+                                  }}
+                                >
+                                  <span>{locale === 'ja' ? 'すべての特典を見る' : 'View All Benefits'}</span>
+                                  <ArrowRight size={14} />
+                                </Link>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+
               {/* External Link Section */}
-              <section>
+              <section className="mb-6">
                 <div className="bg-white rounded-xl border border-[var(--color-border)] p-5">
                   <h3 className="font-semibold text-[var(--color-ink)] mb-2">
                     {locale === 'ja' ? 'アセットの売却' : 'Sell Your Assets'}
@@ -380,6 +436,86 @@ export default function PortfolioPage() {
                     <ExternalLink size={16} />
                   </a>
                 </div>
+              </section>
+
+              {/* ============================================ */}
+              {/* SECTION 3: LINE INTEGRATION (Minimal, at bottom) */}
+              {/* ============================================ */}
+              <section>
+                {!lineConnected ? (
+                  <div className="bg-[var(--color-bg)] rounded-xl border border-[var(--color-border)] overflow-hidden">
+                    <button
+                      onClick={() => setShowLineSection(!showLineSection)}
+                      className="w-full flex items-center justify-between p-4 text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-[#06C755]/10 flex items-center justify-center">
+                          <MessageCircle size={16} className="text-[#06C755]" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-[var(--color-ink)]">
+                            {locale === 'ja' ? 'LINE連携' : 'LINE Integration'}
+                          </p>
+                          <p className="text-xs text-[var(--color-ink-muted)]">
+                            {locale === 'ja' ? '通知を受け取る' : 'Get notifications'}
+                          </p>
+                        </div>
+                      </div>
+                      <motion.div
+                        animate={{ rotate: showLineSection ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <ChevronDown size={18} className="text-[var(--color-ink-muted)]" />
+                      </motion.div>
+                    </button>
+
+                    <AnimatePresence>
+                      {showLineSection && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-4 pb-4 border-t border-[var(--color-border)]">
+                            <ul className="space-y-2 text-xs text-[var(--color-ink-muted)] py-3">
+                              <li className="flex items-center gap-2">
+                                <Bell size={12} />
+                                {locale === 'ja' ? '購入通知を受け取れます' : 'Receive purchase notifications'}
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <TrendingUp size={12} />
+                                {locale === 'ja' ? '価格変動アラート' : 'Price change alerts'}
+                              </li>
+                            </ul>
+                            <button
+                              onClick={handleLineConnect}
+                              className="w-full py-2.5 px-4 bg-[#06C755] text-white rounded-xl font-medium text-sm hover:bg-[#05b04c] transition-colors flex items-center justify-center gap-2"
+                            >
+                              <MessageCircle size={16} />
+                              {locale === 'ja' ? 'LINEで連携する' : 'Connect with LINE'}
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-100">
+                    <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+                      <CheckCircle size={16} className="text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-green-700">
+                        {locale === 'ja' ? 'LINE連携済み' : 'LINE Connected'}
+                      </p>
+                      <p className="text-xs text-green-600">
+                        {locale === 'ja' ? '通知を受け取ります' : 'Receiving notifications'}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </section>
             </>
           ) : (

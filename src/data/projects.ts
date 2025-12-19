@@ -33,8 +33,19 @@ export interface TokenBalance {
   name: string;
   symbol: string;
   balance: number;
-  valuePerToken: number;
   color: string;
+  icon: string;
+}
+
+export interface TokenBenefit {
+  id: string;
+  tokenId: string;
+  name: string;
+  nameJa: string;
+  description: string;
+  descriptionJa: string;
+  cost: number;
+  image: string;
 }
 
 export interface PortfolioItem {
@@ -637,9 +648,86 @@ export const mockPortfolio: PortfolioItem[] = [
 ];
 
 export const mockTokens: TokenBalance[] = [
-  { tokenId: 'ango', name: 'ANGO', symbol: 'ANGO', balance: 1200, valuePerToken: 100, color: '#3b82f6' },
-  { tokenId: 'nanjo', name: '南城', symbol: 'NANJO', balance: 500, valuePerToken: 100, color: '#06b6d4' },
-  { tokenId: 'space', name: '宇宙', symbol: 'SPACE', balance: 300, valuePerToken: 100, color: '#8b5cf6' },
+  { tokenId: 'ango', name: 'ANGO', symbol: 'ANGO', balance: 1200, color: '#3b82f6', icon: 'home' },
+  { tokenId: 'nanjo', name: '南城', symbol: 'NANJO', balance: 500, color: '#06b6d4', icon: 'palmtree' },
+  { tokenId: 'space', name: '宇宙', symbol: 'SPACE', balance: 300, color: '#8b5cf6', icon: 'rocket' },
+];
+
+// Token benefits - what you can exchange tokens for
+export const tokenBenefits: TokenBenefit[] = [
+  // ANGO token benefits
+  {
+    id: 'ango-1night',
+    tokenId: 'ango',
+    name: '1 Night Stay',
+    nameJa: '1泊宿泊',
+    description: 'Stay 1 night at any ANGO kominka property',
+    descriptionJa: 'ANGOの古民家に1泊宿泊',
+    cost: 10,
+    image: 'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=800',
+  },
+  {
+    id: 'ango-bbq',
+    tokenId: 'ango',
+    name: 'BBQ Set',
+    nameJa: 'BBQセット',
+    description: 'Premium BBQ set for your stay',
+    descriptionJa: '滞在時のプレミアムBBQセット',
+    cost: 5,
+    image: 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=800',
+  },
+  {
+    id: 'ango-onsen',
+    tokenId: 'ango',
+    name: 'Private Onsen',
+    nameJa: '貸切温泉',
+    description: '2-hour private onsen session',
+    descriptionJa: '2時間の貸切温泉利用',
+    cost: 3,
+    image: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800',
+  },
+  // Nanjo token benefits
+  {
+    id: 'nanjo-tour',
+    tokenId: 'nanjo',
+    name: 'Guided Tour',
+    nameJa: 'ガイドツアー',
+    description: 'Half-day guided tour of Nanjo highlights',
+    descriptionJa: '南城市の名所を巡る半日ガイドツアー',
+    cost: 20,
+    image: 'https://images.unsplash.com/photo-1590077428593-a55bb07c4665?w=800',
+  },
+  {
+    id: 'nanjo-lunch',
+    tokenId: 'nanjo',
+    name: 'Local Lunch',
+    nameJa: '地元ランチ',
+    description: 'Traditional Okinawan lunch at partner restaurant',
+    descriptionJa: '提携レストランでの沖縄料理ランチ',
+    cost: 8,
+    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
+  },
+  // Space token benefits
+  {
+    id: 'space-vr',
+    tokenId: 'space',
+    name: 'VR Experience',
+    nameJa: 'VR体験',
+    description: 'Space travel VR simulation experience',
+    descriptionJa: '宇宙旅行VRシミュレーション体験',
+    cost: 15,
+    image: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800',
+  },
+  {
+    id: 'space-meetup',
+    tokenId: 'space',
+    name: 'Astronaut Meetup',
+    nameJa: '宇宙飛行士交流会',
+    description: 'Exclusive meetup with astronaut trainees',
+    descriptionJa: '宇宙飛行士訓練生との限定交流会',
+    cost: 50,
+    image: 'https://images.unsplash.com/photo-1454789548928-9efd52dc4031?w=800',
+  },
 ];
 
 // ============================================
@@ -662,4 +750,8 @@ export function getProjectByAsset(assetId: string): Project | undefined {
   const asset = getAssetById(assetId);
   if (!asset) return undefined;
   return getProjectById(asset.projectId);
+}
+
+export function getBenefitsByToken(tokenId: string): TokenBenefit[] {
+  return tokenBenefits.filter(b => b.tokenId === tokenId);
 }
