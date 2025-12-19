@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, ShoppingBag, User, Globe } from 'lucide-react';
+import { Home, Store, User, Globe } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useLikes } from '@/lib/likes';
 
@@ -21,7 +21,7 @@ export default function BottomNav() {
     },
     {
       href: '/search',
-      icon: ShoppingBag,
+      icon: Store,
       labelEn: 'Marketplace',
       labelJa: 'マーケット',
       isMain: true,

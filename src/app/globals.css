@@ -402,15 +402,15 @@ h3 { font-size: 1.25rem; }
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* Stagger Animation Delays */
-.stagger-1 { animation-delay: 0.05s; opacity: 0; }
-.stagger-2 { animation-delay: 0.1s; opacity: 0; }
-.stagger-3 { animation-delay: 0.15s; opacity: 0; }
-.stagger-4 { animation-delay: 0.2s; opacity: 0; }
-.stagger-5 { animation-delay: 0.25s; opacity: 0; }
-.stagger-6 { animation-delay: 0.3s; opacity: 0; }
-.stagger-7 { animation-delay: 0.35s; opacity: 0; }
-.stagger-8 { animation-delay: 0.4s; opacity: 0; }
+/* Stagger Animation - Auto Apply slideUp */
+.stagger-1 { animation: slideUp 0.6s var(--ease-out-expo) 0.05s forwards; opacity: 0; }
+.stagger-2 { animation: slideUp 0.6s var(--ease-out-expo) 0.1s forwards; opacity: 0; }
+.stagger-3 { animation: slideUp 0.6s var(--ease-out-expo) 0.15s forwards; opacity: 0; }
+.stagger-4 { animation: slideUp 0.6s var(--ease-out-expo) 0.2s forwards; opacity: 0; }
+.stagger-5 { animation: slideUp 0.6s var(--ease-out-expo) 0.25s forwards; opacity: 0; }
+.stagger-6 { animation: slideUp 0.6s var(--ease-out-expo) 0.3s forwards; opacity: 0; }
+.stagger-7 { animation: slideUp 0.6s var(--ease-out-expo) 0.35s forwards; opacity: 0; }
+.stagger-8 { animation: slideUp 0.6s var(--ease-out-expo) 0.4s forwards; opacity: 0; }
 
 /* Gradient Backgrounds */
 .gradient-primary {
