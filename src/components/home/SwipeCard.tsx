@@ -110,22 +110,22 @@ export default function SwipeCard({ asset, onSwipe, isTop }: SwipeCardProps) {
         {/* Premium gradient overlay - darker at bottom for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/5 to-black/30 pointer-events-none" />
 
-        {/* Swipe feedback - Like */}
+        {/* Swipe feedback - Like (Mint/Cheer color) */}
         {isTop && (
           <>
             <motion.div
               style={{ opacity: likeOpacity, scale: likeScale }}
-              className="absolute top-1/2 right-6 -translate-y-1/2 w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-dark)] flex items-center justify-center shadow-[var(--shadow-glow)] pointer-events-none"
+              className="absolute top-1/2 right-6 -translate-y-1/2 w-16 h-16 rounded-2xl bg-[var(--color-mint)] flex items-center justify-center shadow-lg pointer-events-none"
             >
-              <Heart size={28} className="text-white" fill="white" />
+              <Heart size={28} className="text-[var(--color-ink)]" fill="currentColor" />
             </motion.div>
 
             {/* Swipe feedback - Pass */}
             <motion.div
               style={{ opacity: passOpacity, scale: passScale }}
-              className="absolute top-1/2 left-6 -translate-y-1/2 w-16 h-16 rounded-2xl bg-white/95 backdrop-blur-sm flex items-center justify-center shadow-xl pointer-events-none"
+              className="absolute top-1/2 left-6 -translate-y-1/2 w-16 h-16 rounded-2xl bg-white/95 backdrop-blur-sm flex items-center justify-center shadow-lg pointer-events-none"
             >
-              <X size={28} className="text-gray-400" />
+              <X size={28} className="text-[var(--color-ink-muted)]" />
             </motion.div>
           </>
         )}

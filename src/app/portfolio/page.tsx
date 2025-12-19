@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { mockPortfolio, getAssetById, getCategoryById, categories } from '@/data/assets';
 import { useI18n } from '@/lib/i18n';
 import PortfolioChart from '@/components/portfolio/PortfolioChart';
-import { ChevronRight, ExternalLink, Globe, Briefcase, Store, TrendingUp } from 'lucide-react';
+import { ChevronRight, ExternalLink, Globe, Briefcase, Store, TrendingUp, Flag, CheckCircle } from 'lucide-react';
 import CategoryIcon from '@/components/ui/CategoryIcon';
 
 export default function PortfolioPage() {
@@ -73,22 +73,24 @@ export default function PortfolioPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] pb-24 md:pb-8">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-[var(--color-surface)]/95 backdrop-blur-sm border-b border-[var(--color-border)] px-4 py-3 md:px-8">
+      {/* Header - Clean Museum Style */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-lg border-b border-[var(--color-border)] px-4 py-3 md:px-8">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           {/* Mobile: Show Finango logo */}
-          <h1 className="md:hidden text-xl font-black text-[var(--color-primary)]">finango</h1>
+          <h1 className="md:hidden text-xl font-bold text-[var(--color-primary)]">finango</h1>
           {/* Desktop: Show page title */}
-          <div className="hidden md:flex items-center gap-2">
-            <Briefcase size={20} className="text-[var(--color-accent)]" />
-            <h1 className="text-lg font-bold text-[var(--color-text)]">{t('portfolio.title')}</h1>
+          <div className="hidden md:flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-bg)] flex items-center justify-center">
+              <Briefcase size={18} className="text-[var(--color-primary)]" />
+            </div>
+            <h1 className="text-lg font-semibold text-[var(--color-ink)]">{t('portfolio.title')}</h1>
           </div>
           <button
             onClick={toggleLocale}
-            className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-border)] text-sm font-medium"
+            className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-bg-subtle)] text-sm font-medium text-[var(--color-ink-secondary)]"
           >
             <Globe size={14} />
-            <span className="uppercase">{locale}</span>
+            <span className="uppercase text-xs">{locale}</span>
           </button>
         </div>
       </header>
@@ -98,27 +100,30 @@ export default function PortfolioPage() {
         <div className="max-w-4xl mx-auto">
           {portfolioData.items.length > 0 ? (
             <>
-              {/* Total Value - Hero Section (Mobile First) */}
+              {/* Total Value - Clean Trust Style */}
               <div className="mb-6">
-                <div className="bg-gradient-to-br from-[var(--color-primary)] to-[#1e3a5f] rounded-2xl p-6 text-white">
-                  <p className="text-sm font-medium opacity-80 mb-1">
-                    {locale === 'ja' ? '総資産額' : 'Total Portfolio Value'}
-                  </p>
-                  <p className="text-4xl font-bold tracking-tight">
+                <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Flag size={14} className="text-[var(--color-mint-dark)]" />
+                    <span className="text-sm font-semibold text-[var(--color-mint-dark)]">
+                      {locale === 'ja' ? 'マイポートフォリオ' : 'My Portfolio'}
+                    </span>
+                  </div>
+                  <p className="text-3xl font-bold text-[var(--color-ink)] tracking-tight">
                     {formatCurrency(portfolioData.total)}
                   </p>
-                  <div className="flex items-center gap-4 mt-4 pt-4 border-t border-white/20">
+                  <div className="flex items-center gap-5 mt-4 pt-4 border-t border-[var(--color-border)]">
                     <div>
-                      <p className="text-sm opacity-70">{locale === 'ja' ? '保有銘柄' : 'Holdings'}</p>
-                      <p className="text-lg font-semibold">{portfolioData.items.length}</p>
+                      <p className="text-xs text-[var(--color-ink-muted)]">{locale === 'ja' ? '保有銘柄' : 'Holdings'}</p>
+                      <p className="text-lg font-semibold text-[var(--color-ink)]">{portfolioData.items.length}</p>
                     </div>
                     <div>
-                      <p className="text-sm opacity-70">{locale === 'ja' ? 'カテゴリ' : 'Categories'}</p>
-                      <p className="text-lg font-semibold">{portfolioData.uniqueCategories.length}</p>
+                      <p className="text-xs text-[var(--color-ink-muted)]">{locale === 'ja' ? 'カテゴリ' : 'Categories'}</p>
+                      <p className="text-lg font-semibold text-[var(--color-ink)]">{portfolioData.uniqueCategories.length}</p>
                     </div>
-                    <div className="ml-auto flex items-center gap-1 text-emerald-300">
-                      <TrendingUp size={16} />
-                      <span className="text-sm font-semibold">+12.5%</span>
+                    <div className="ml-auto flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[var(--color-mint-bg)]">
+                      <TrendingUp size={14} className="text-[var(--color-mint-dark)]" />
+                      <span className="text-sm font-semibold text-[var(--color-mint-dark)]">+12.5%</span>
                     </div>
                   </div>
                 </div>
@@ -126,8 +131,8 @@ export default function PortfolioPage() {
 
               {/* Portfolio Chart */}
               <div className="mb-8">
-                <h2 className="text-base font-semibold mb-3 text-[var(--color-text)]">{t('portfolio.holdings')}</h2>
-                <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-5">
+                <h2 className="text-base font-semibold mb-3 text-[var(--color-ink)]">{t('portfolio.holdings')}</h2>
+                <div className="bg-white rounded-xl border border-[var(--color-border)] p-5">
                   <PortfolioChart
                     data={portfolioData.chartData}
                     total={portfolioData.total}
@@ -138,8 +143,8 @@ export default function PortfolioPage() {
               {/* Secondary Market Access - Quick Links */}
               {portfolioData.uniqueCategories.length > 0 && (
                 <section className="mb-8">
-                  <h2 className="text-base font-semibold mb-3 flex items-center gap-2 text-[var(--color-text)]">
-                    <Store size={18} className="text-emerald-600" />
+                  <h2 className="text-base font-semibold mb-3 flex items-center gap-2 text-[var(--color-ink)]">
+                    <Store size={18} className="text-[var(--color-mint-dark)]" />
                     {locale === 'ja' ? '二次流通マーケット' : 'Secondary Market'}
                   </h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -150,7 +155,7 @@ export default function PortfolioPage() {
                         <Link
                           key={categoryId}
                           href={`/market/${categoryId}`}
-                          className="flex items-center gap-3 p-4 bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)]/30 hover:shadow-md transition-all group"
+                          className="flex items-center gap-3 p-4 bg-white rounded-xl border border-[var(--color-border)] hover:border-[var(--color-primary)]/30 hover:shadow-md transition-all group"
                         >
                           <div
                             className="w-11 h-11 rounded-lg flex items-center justify-center"
@@ -159,14 +164,14 @@ export default function PortfolioPage() {
                             <CategoryIcon icon={category.icon} size={20} color={category.color} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors truncate">
+                            <p className="font-medium text-sm text-[var(--color-ink)] group-hover:text-[var(--color-primary)] transition-colors truncate">
                               {locale === 'ja' ? category.nameJa : category.name}
                             </p>
-                            <p className="text-sm text-[var(--color-text-muted)]">
+                            <p className="text-xs text-[var(--color-ink-muted)]">
                               {locale === 'ja' ? '売買可能' : 'Trade available'}
                             </p>
                           </div>
-                          <ChevronRight size={16} className="text-[var(--color-text-muted)] flex-shrink-0" />
+                          <ChevronRight size={16} className="text-[var(--color-ink-muted)] flex-shrink-0" />
                         </Link>
                       );
                     })}
@@ -176,19 +181,19 @@ export default function PortfolioPage() {
 
               {/* Assets List */}
               <section className="mb-8">
-                <h2 className="text-base font-semibold mb-3 text-[var(--color-text)]">{t('portfolio.assets')}</h2>
+                <h2 className="text-base font-semibold mb-3 text-[var(--color-ink)]">{t('portfolio.assets')}</h2>
                 <div className="space-y-3">
                   {portfolioData.items.map((item, index) => (
                     <div
                       key={item.assetId}
-                      className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] overflow-hidden"
+                      className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden"
                     >
                       <Link
                         href={`/asset/${item.assetId}`}
                         className="flex items-center gap-4 p-4 hover:bg-[var(--color-bg)] transition-colors"
                       >
                         {/* Image */}
-                        <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
+                        <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
                           {item.asset && (
                             <Image
                               src={item.asset.image}
@@ -202,26 +207,26 @@ export default function PortfolioPage() {
 
                         {/* Content */}
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-sm text-[var(--color-text)] truncate">
+                          <h3 className="font-semibold text-sm text-[var(--color-ink)] truncate">
                             {item.asset?.name}
                           </h3>
-                          <p className="text-sm text-[var(--color-text-muted)] mt-0.5">
+                          <p className="text-xs text-[var(--color-ink-muted)] mt-0.5">
                             {locale === 'ja' ? item.category?.nameJa : item.category?.name} • {formatDate(item.purchaseDate)}
                           </p>
-                          <p className="text-sm font-bold mt-1 text-[var(--color-accent)]">
+                          <p className="text-sm font-bold mt-1 text-[var(--color-primary)]">
                             {formatCurrency(item.amount)}
                           </p>
                         </div>
 
                         {/* Arrow */}
-                        <ChevronRight size={18} className="text-[var(--color-text-muted)] flex-shrink-0" />
+                        <ChevronRight size={18} className="text-[var(--color-ink-muted)] flex-shrink-0" />
                       </Link>
 
                       {/* Secondary Market Button */}
                       <div className="px-4 pb-3">
                         <Link
                           href={`/market/${item.asset?.categoryId}`}
-                          className="flex items-center justify-center gap-2 w-full py-2.5 bg-[var(--color-bg)] hover:bg-[var(--color-border)] rounded-lg text-sm font-medium text-[var(--color-text-secondary)] transition-colors"
+                          className="flex items-center justify-center gap-2 w-full py-2.5 bg-[var(--color-bg)] hover:bg-[var(--color-border)] rounded-xl text-sm font-medium text-[var(--color-ink-secondary)] transition-colors"
                         >
                           <Store size={14} />
                           <span>{locale === 'ja' ? '二次流通で売買' : 'Trade on Secondary Market'}</span>
@@ -234,16 +239,16 @@ export default function PortfolioPage() {
 
               {/* External Link Section */}
               <section>
-                <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-5">
-                  <h3 className="font-semibold text-[var(--color-text)] mb-2">{t('portfolio.sell')}</h3>
-                  <p className="text-sm text-[var(--color-text-secondary)] mb-4">
+                <div className="bg-white rounded-xl border border-[var(--color-border)] p-5">
+                  <h3 className="font-semibold text-[var(--color-ink)] mb-2">{t('portfolio.sell')}</h3>
+                  <p className="text-sm text-[var(--color-ink-secondary)] mb-4">
                     {t('portfolio.sellNote')}
                   </p>
                   <a
                     href="https://ango.jp/portfolio"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-3 px-4 border border-[var(--color-border)] rounded-lg font-medium text-sm text-[var(--color-text)] hover:bg-[var(--color-bg)] transition-colors"
+                    className="flex items-center justify-center gap-2 w-full py-3 px-4 border border-[var(--color-border)] rounded-xl font-medium text-sm text-[var(--color-ink)] hover:bg-[var(--color-bg)] transition-colors"
                   >
                     <span>{t('portfolio.manageOnAngo')}</span>
                     <ExternalLink size={16} />
@@ -254,16 +259,16 @@ export default function PortfolioPage() {
           ) : (
             /* Empty State */
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-16 h-16 rounded-full bg-[var(--color-border)] flex items-center justify-center mb-5">
-                <Briefcase size={28} className="text-[var(--color-text-muted)]" />
+              <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary-bg)] flex items-center justify-center mb-5">
+                <Briefcase size={28} className="text-[var(--color-primary)]" />
               </div>
-              <h2 className="text-lg font-bold text-[var(--color-text)] mb-2">{t('portfolio.empty')}</h2>
-              <p className="text-[var(--color-text-muted)] text-center text-sm max-w-xs mb-6">
+              <h2 className="text-lg font-bold text-[var(--color-ink)] mb-2">{t('portfolio.empty')}</h2>
+              <p className="text-[var(--color-ink-muted)] text-center text-sm max-w-xs mb-6">
                 {t('portfolio.emptyHint')}
               </p>
               <Link
                 href="/search"
-                className="px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+                className="px-6 py-3 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-primary-dark)] transition-colors shadow-sm"
               >
                 {locale === 'ja' ? '銘柄を探す' : 'Find Assets'}
               </Link>
