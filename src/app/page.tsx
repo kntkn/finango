@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useI18n } from '@/lib/i18n';
 import { assets } from '@/data/assets';
-import { ArrowRight, Globe, Flag, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Globe, CheckCircle2 } from 'lucide-react';
 import { SwipeStack } from '@/components/home/SwipeCard';
 
 export default function Home() {
@@ -169,30 +169,15 @@ export default function Home() {
           {/* Hero Content */}
           <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-8">
             <div className="text-center max-w-3xl mx-auto">
-              {/* Badge - Playful Professional */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-[var(--color-mint-bg)] border border-[var(--color-mint)]/20">
-                <Flag size={14} className="text-[var(--color-mint-dark)]" />
-                <span className="text-sm font-semibold text-[var(--color-mint-dark)]">
-                  {locale === 'ja' ? 'RWAマーケットプレイス' : 'RWA Marketplace'}
-                </span>
-              </div>
-
-              {/* Main Headline */}
-              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-[var(--color-ink)] leading-[1.15] tracking-tight">
+              {/* Main Headline - Large & Bold */}
+              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold text-[var(--color-ink)] leading-[1.1] tracking-tight">
                 {locale === 'ja'
                   ? '応援が、資産になる。'
                   : 'Your Support Becomes an Asset.'}
               </h1>
 
-              {/* Sub copy - 信頼層 */}
-              <p className="mt-5 text-lg text-[var(--color-ink-secondary)] leading-relaxed max-w-xl mx-auto">
-                {locale === 'ja'
-                  ? '厳選された現実資産（RWA）を、シンプルに保有・売買できるマーケットプレイス。'
-                  : 'A marketplace where you can simply hold and trade curated real-world assets.'}
-              </p>
-
               {/* CTA Button - Trust Blue */}
-              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   href="/search"
                   className="group inline-flex items-center gap-2.5 px-7 py-3.5 bg-[var(--color-primary)] text-white rounded-xl text-base font-semibold shadow-sm hover:shadow-md hover:bg-[var(--color-primary-dark)] transition-all duration-200"
