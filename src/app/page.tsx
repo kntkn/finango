@@ -3,12 +3,25 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useI18n } from '@/lib/i18n';
-import { assets } from '@/data/assets';
+import { useAuth } from '@/lib/auth';
+import { assets, getProjectById } from '@/data/projects';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Sparkles, Shield, TrendingUp, LogIn, ArrowRight } from 'lucide-react';
+import {
+  ChevronRight,
+  ChevronLeft,
+  Sparkles,
+  Shield,
+  TrendingUp,
+  LogIn,
+  ArrowRight,
+  X,
+  ExternalLink,
+  Heart,
+  Flame
+} from 'lucide-react';
 
-// Onboarding steps data
+// Onboarding steps data (for non-authenticated users)
 const onboardingSteps = [
   {
     id: 1,
@@ -39,19 +52,275 @@ const onboardingSteps = [
   },
 ];
 
+// Featured assets for Stories (popular/trending)
+const getFeaturedAssets = () => {
+  // Sort by sold percentage and get top 8
+  return [...assets]
+    .map(asset => ({
+      ...asset,
+      soldPercent: asset.sold / (asset.sold + asset.available)
+    }))
+    .sort((a, b) => b.soldPercent - a.soldPercent)
+    .slice(0, 8);
+};
+
+// ==========================================
+// STORIES COMPONENT (Instagram-style)
+// ==========================================
+function StoriesSection({ locale }: { locale: 'ja' | 'en' }) {
+  const [activeStory, setActiveStory] = useState<number | null>(null);
+  const [storyProgress, setStoryProgress] = useState(0);
+  const featuredAssets = getFeaturedAssets();
+
+  // Auto-progress story
+  useEffect(() => {
+    if (activeStory === null) return;
+
+    setStoryProgress(0);
+    const progressInterval = setInterval(() => {
+      setStoryProgress(prev => {
+        if (prev >= 100) {
+          // Move to next story
+          if (activeStory < featuredAssets.length - 1) {
+            setActiveStory(activeStory + 1);
+            return 0;
+          } else {
+            setActiveStory(null);
+            return 0;
+          }
+        }
+        return prev + 2;
+      });
+    }, 100);
+
+    return () => clearInterval(progressInterval);
+  }, [activeStory, featuredAssets.length]);
+
+  const openStory = (index: number) => {
+    setActiveStory(index);
+    setStoryProgress(0);
+  };
+
+  const closeStory = () => {
+    setActiveStory(null);
+    setStoryProgress(0);
+  };
+
+  const nextStory = () => {
+    if (activeStory !== null && activeStory < featuredAssets.length - 1) {
+      setActiveStory(activeStory + 1);
+      setStoryProgress(0);
+    } else {
+      closeStory();
+    }
+  };
+
+  const prevStory = () => {
+    if (activeStory !== null && activeStory > 0) {
+      setActiveStory(activeStory - 1);
+      setStoryProgress(0);
+    }
+  };
+
+  return (
+    <>
+      {/* Stories Thumbnails */}
+      <div className="px-4 py-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Flame size={16} className="text-orange-500" />
+          <span className="text-sm font-bold text-[var(--color-ink)]">
+            {locale === 'ja' ? '注目のRWA' : 'Trending RWA'}
+          </span>
+        </div>
+        <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+          {featuredAssets.map((asset, index) => {
+            const project = getProjectById(asset.projectId);
+            return (
+              <button
+                key={asset.id}
+                onClick={() => openStory(index)}
+                className="flex-shrink-0 flex flex-col items-center gap-1.5"
+              >
+                {/* Gradient Ring */}
+                <div
+                  className="p-[3px] rounded-full"
+                  style={{
+                    background: `linear-gradient(135deg, ${project?.color || '#1F4BFF'}, #ec4899, #f59e0b)`
+                  }}
+                >
+                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white">
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={asset.image}
+                        alt={locale === 'ja' ? asset.nameJa : asset.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* Label */}
+                <span className="text-[10px] text-[var(--color-ink-secondary)] font-medium max-w-[70px] truncate">
+                  {locale === 'ja' ? project?.nameJa : project?.name}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Full-Screen Story Modal */}
+      <AnimatePresence>
+        {activeStory !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] bg-black"
+          >
+            {(() => {
+              const asset = featuredAssets[activeStory];
+              const project = getProjectById(asset.projectId);
+              const soldPercent = Math.round((asset.sold / (asset.sold + asset.available)) * 100);
+
+              return (
+                <div className="relative w-full h-full">
+                  {/* Progress Bars */}
+                  <div className="absolute top-0 left-0 right-0 z-20 flex gap-1 p-2 pt-[max(8px,env(safe-area-inset-top))]">
+                    {featuredAssets.map((_, index) => (
+                      <div key={index} className="flex-1 h-0.5 bg-white/30 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-white transition-all duration-100"
+                          style={{
+                            width: index < activeStory ? '100%' : index === activeStory ? `${storyProgress}%` : '0%'
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Header */}
+                  <div className="absolute top-0 left-0 right-0 z-20 pt-[max(16px,calc(env(safe-area-inset-top)+8px))] px-4 pb-4">
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                          style={{ backgroundColor: project?.color }}
+                        >
+                          {(project?.name || 'P')[0]}
+                        </div>
+                        <div>
+                          <p className="text-white font-semibold text-sm">
+                            {locale === 'ja' ? project?.nameJa : project?.name}
+                          </p>
+                          <p className="text-white/60 text-xs">
+                            {soldPercent}% {locale === 'ja' ? '販売済' : 'sold'}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={closeStory}
+                        className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"
+                      >
+                        <X size={18} className="text-white" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Background Image */}
+                  <div className="absolute inset-0">
+                    <Image
+                      src={asset.image}
+                      alt={locale === 'ja' ? asset.nameJa : asset.name}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
+                  </div>
+
+                  {/* Touch Areas for Navigation */}
+                  <div className="absolute inset-0 flex z-10">
+                    <button
+                      onClick={prevStory}
+                      className="w-1/3 h-full"
+                      aria-label="Previous story"
+                    />
+                    <div className="w-1/3 h-full" />
+                    <button
+                      onClick={nextStory}
+                      className="w-1/3 h-full"
+                      aria-label="Next story"
+                    />
+                  </div>
+
+                  {/* Bottom Content */}
+                  <div className="absolute bottom-0 left-0 right-0 z-20 p-4 pb-[max(24px,calc(env(safe-area-inset-bottom)+16px))]">
+                    <div className="bg-white/95 backdrop-blur-md rounded-2xl p-4">
+                      <h3 className="font-bold text-[var(--color-ink)] text-lg mb-1">
+                        {locale === 'ja' ? asset.nameJa : asset.name}
+                      </h3>
+                      <p className="text-sm text-[var(--color-ink-secondary)] mb-3 line-clamp-2">
+                        {locale === 'ja' ? asset.descriptionJa : asset.description}
+                      </p>
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <span className="text-xs text-[var(--color-ink-muted)]">
+                            {locale === 'ja' ? '価格' : 'Price'}
+                          </span>
+                          <p className="text-lg font-bold text-[var(--color-ink)]">
+                            ¥{asset.price.toLocaleString()}
+                            <span className="text-xs font-normal text-[var(--color-ink-muted)] ml-1">
+                              / {locale === 'ja' ? asset.unitJa : asset.unit}
+                            </span>
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-xs text-[var(--color-ink-muted)]">
+                            {locale === 'ja' ? '残り' : 'Left'}
+                          </span>
+                          <p className="text-lg font-bold text-[var(--color-primary)]">
+                            {asset.available}
+                          </p>
+                        </div>
+                      </div>
+                      <Link
+                        href={`/asset/${asset.id}`}
+                        onClick={closeStory}
+                        className="flex items-center justify-center gap-2 w-full py-3 bg-[var(--color-primary)] text-white rounded-xl font-bold"
+                      >
+                        <span>{locale === 'ja' ? '詳細を見る' : 'View Details'}</span>
+                        <ExternalLink size={16} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+// ==========================================
+// MAIN HOME COMPONENT
+// ==========================================
 export default function Home() {
   const { locale, setLocale } = useI18n();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [currentStep, setCurrentStep] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Auto-advance carousel
+  // Auto-advance carousel (for non-authenticated)
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!isAutoPlaying || isAuthenticated) return;
     const timer = setInterval(() => {
       setCurrentStep((prev) => (prev + 1) % onboardingSteps.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, isAuthenticated]);
 
   const nextStep = () => {
     setIsAutoPlaying(false);
@@ -75,6 +344,177 @@ export default function Home() {
   // Create duplicated assets for infinite scroll effect
   const marqueeAssets = [...assets, ...assets, ...assets];
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
+        <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)] flex items-center justify-center animate-pulse">
+          <span className="text-white font-bold text-xl">F</span>
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // AUTHENTICATED USER VIEW
+  // ==========================================
+  if (isAuthenticated) {
+    // Get recent/popular assets for the main feed
+    const popularAssets = [...assets]
+      .sort((a, b) => b.sold - a.sold)
+      .slice(0, 6);
+
+    return (
+      <div className="min-h-screen bg-[var(--color-bg)] pb-24">
+        {/* Header */}
+        <header className="sticky top-0 z-40 bg-white border-b border-[var(--color-border)]">
+          <div className="px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)] flex items-center justify-center">
+                <span className="text-white font-bold text-sm">F</span>
+              </div>
+              <h1 className="text-lg font-bold text-[var(--color-primary)]">finango</h1>
+            </div>
+            <div className="flex items-center gap-3">
+              <button onClick={toggleLocale} className="text-sm text-[var(--color-ink-muted)]">
+                {locale === 'ja' ? 'EN' : 'JA'}
+              </button>
+              <Link href="/portfolio" className="text-sm font-medium text-[var(--color-primary)]">
+                {locale === 'ja' ? 'マイページ' : 'My Page'}
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        {/* Welcome Message */}
+        <div className="px-4 pt-4 pb-2">
+          <p className="text-[var(--color-ink-muted)] text-sm">
+            {locale === 'ja' ? 'おかえりなさい' : 'Welcome back'},
+          </p>
+          <h2 className="text-xl font-bold text-[var(--color-ink)]">
+            {user?.name || 'User'}
+          </h2>
+        </div>
+
+        {/* Stories Section */}
+        <StoriesSection locale={locale} />
+
+        {/* Divider */}
+        <div className="h-2 bg-[var(--color-bg)]" />
+
+        {/* Popular Assets Section */}
+        <div className="px-4 py-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-[var(--color-ink)]">
+              {locale === 'ja' ? '人気のアセット' : 'Popular Assets'}
+            </h3>
+            <Link
+              href="/search"
+              className="flex items-center gap-1 text-sm text-[var(--color-primary)] font-medium"
+            >
+              {locale === 'ja' ? 'すべて見る' : 'See All'}
+              <ChevronRight size={16} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {popularAssets.map(asset => {
+              const project = getProjectById(asset.projectId);
+              const soldPercent = Math.round((asset.sold / (asset.sold + asset.available)) * 100);
+              return (
+                <Link
+                  key={asset.id}
+                  href={`/asset/${asset.id}`}
+                  className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden hover:shadow-md transition-shadow"
+                >
+                  <div className="relative aspect-[4/3]">
+                    <Image
+                      src={asset.image}
+                      alt={locale === 'ja' ? asset.nameJa : asset.name}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute top-2 left-2">
+                      <span
+                        className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
+                        style={{ backgroundColor: project?.color }}
+                      >
+                        {locale === 'ja' ? project?.nameJa : project?.name}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <h4 className="font-semibold text-sm text-[var(--color-ink)] line-clamp-1 mb-1">
+                      {locale === 'ja' ? asset.nameJa : asset.name}
+                    </h4>
+                    <p className="text-xs text-[var(--color-ink-muted)] mb-2">
+                      ¥{asset.price.toLocaleString()}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-1 bg-[var(--color-border)] rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-[var(--color-primary)] rounded-full"
+                          style={{ width: `${soldPercent}%` }}
+                        />
+                      </div>
+                      <span className="text-[10px] text-[var(--color-ink-muted)]">
+                        {soldPercent}%
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="px-4 py-4">
+          <h3 className="text-lg font-bold text-[var(--color-ink)] mb-4">
+            {locale === 'ja' ? 'クイックアクション' : 'Quick Actions'}
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            <Link
+              href="/search"
+              className="flex items-center gap-3 p-4 bg-white rounded-xl border border-[var(--color-border)]"
+            >
+              <div className="w-10 h-10 rounded-lg bg-[var(--color-primary-bg)] flex items-center justify-center">
+                <Sparkles size={20} className="text-[var(--color-primary)]" />
+              </div>
+              <div>
+                <p className="font-semibold text-sm text-[var(--color-ink)]">
+                  {locale === 'ja' ? 'アセットを探す' : 'Find Assets'}
+                </p>
+                <p className="text-xs text-[var(--color-ink-muted)]">
+                  {assets.length} {locale === 'ja' ? '件' : 'items'}
+                </p>
+              </div>
+            </Link>
+            <Link
+              href="/portfolio"
+              className="flex items-center gap-3 p-4 bg-white rounded-xl border border-[var(--color-border)]"
+            >
+              <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+                <TrendingUp size={20} className="text-green-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-sm text-[var(--color-ink)]">
+                  {locale === 'ja' ? 'ポートフォリオ' : 'Portfolio'}
+                </p>
+                <p className="text-xs text-[var(--color-ink-muted)]">
+                  {locale === 'ja' ? '資産を確認' : 'View assets'}
+                </p>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // NON-AUTHENTICATED USER VIEW (Onboarding)
+  // ==========================================
   return (
     <div className="min-h-screen bg-[var(--color-bg)] overflow-hidden">
       {/* ===== MOBILE VERSION ===== */}
