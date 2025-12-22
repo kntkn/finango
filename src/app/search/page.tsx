@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useI18n } from '@/lib/i18n';
 import { projects, assets, getProjectById } from '@/data/projects';
 import {
@@ -12,8 +12,11 @@ import {
   TrendingUp,
   Clock,
   Flame,
+  Layers,
+  ChevronRight,
 } from 'lucide-react';
 import AssetCard from '@/components/assets/AssetCard';
+import Image from 'next/image';
 
 type CategoryFilter = 'all' | 'membership' | 'nft' | 'investment' | 'experience';
 type SortOption = 'popular' | 'new' | 'price-low' | 'price-high' | 'almost-sold';
@@ -48,10 +51,12 @@ export default function MarketsPage() {
   const { locale } = useI18n();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('all');
+  const [activeProject, setActiveProject] = useState<string>('all');
   const [priceRange, setPriceRange] = useState<PriceRange>('all');
   const [sortOption, setSortOption] = useState<SortOption>('popular');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
+  const projectScrollRef = useRef<HTMLDivElement>(null);
 
   const filteredAssets = useMemo(() => {
     let result = [...assets];
@@ -68,6 +73,11 @@ export default function MarketsPage() {
           project?.nameJa.toLowerCase().includes(query)
         );
       });
+    }
+
+    // Project filter
+    if (activeProject !== 'all') {
+      result = result.filter((asset) => asset.projectId === activeProject);
     }
 
     // Category filter
@@ -123,21 +133,26 @@ export default function MarketsPage() {
     }
 
     return result;
-  }, [searchQuery, activeCategory, priceRange, sortOption]);
+  }, [searchQuery, activeProject, activeCategory, priceRange, sortOption]);
 
   const clearFilters = () => {
     setSearchQuery('');
+    setActiveProject('all');
     setActiveCategory('all');
     setPriceRange('all');
     setSortOption('popular');
   };
 
-  const hasActiveFilters = searchQuery || activeCategory !== 'all' || priceRange !== 'all';
+  const hasActiveFilters = searchQuery || activeProject !== 'all' || activeCategory !== 'all' || priceRange !== 'all';
   const activeFilterCount = [
+    activeProject !== 'all',
     activeCategory !== 'all',
     priceRange !== 'all',
     searchQuery.trim(),
   ].filter(Boolean).length;
+
+  // Get the current project for the header display
+  const currentProject = activeProject !== 'all' ? getProjectById(activeProject) : null;
 
   const SortIcon = sortLabels[sortOption].icon;
 
@@ -150,7 +165,12 @@ export default function MarketsPage() {
             {/* Top Row: Logo + Search + Sort */}
             <div className="flex items-center gap-6">
               {/* Logo */}
-              <h1 className="text-xl font-bold text-[var(--color-primary)] flex-shrink-0">finango</h1>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)] flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">F</span>
+                </div>
+                <h1 className="text-xl font-bold text-[var(--color-primary)]">finango</h1>
+              </div>
 
               {/* Search Bar */}
               <div className="flex-1 max-w-xl relative">
@@ -214,12 +234,119 @@ export default function MarketsPage() {
         </div>
       </header>
 
+      {/* Desktop: Project Selector Bar */}
+      <div className="hidden md:block bg-white border-b border-[var(--color-border)]">
+        <div className="max-w-7xl mx-auto px-8 py-4">
+          {/* Project > Asset Structure Indicator */}
+          <div className="flex items-center gap-2 mb-3">
+            <Layers size={16} className="text-[var(--color-primary)]" />
+            <span className="text-sm font-medium text-[var(--color-ink)]">
+              {locale === 'ja' ? 'プロジェクトから探す' : 'Browse by Project'}
+            </span>
+            <span className="text-xs text-[var(--color-ink-muted)]">
+              {locale === 'ja' ? '(プロジェクト → 個別RWAアセット)' : '(Project → Individual RWA Assets)'}
+            </span>
+          </div>
+
+          {/* Horizontal Project Scroller */}
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide">
+            {/* All Projects */}
+            <button
+              onClick={() => setActiveProject('all')}
+              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
+                activeProject === 'all'
+                  ? 'bg-[var(--color-primary)] border-[var(--color-primary)] text-white'
+                  : 'bg-white border-[var(--color-border)] text-[var(--color-ink-secondary)] hover:border-[var(--color-primary)]'
+              }`}
+            >
+              <span className="text-sm font-medium">{locale === 'ja' ? 'すべて' : 'All'}</span>
+            </button>
+
+            {/* Individual Projects */}
+            {projects.map((project) => {
+              const assetCount = assets.filter(a => a.projectId === project.id).length;
+              return (
+                <button
+                  key={project.id}
+                  onClick={() => setActiveProject(project.id)}
+                  className={`flex-shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${
+                    activeProject === project.id
+                      ? 'border-2 shadow-md'
+                      : 'bg-white border-[var(--color-border)] hover:border-[var(--color-primary)]'
+                  }`}
+                  style={{
+                    borderColor: activeProject === project.id ? project.color : undefined,
+                    backgroundColor: activeProject === project.id ? `${project.color}10` : undefined,
+                  }}
+                >
+                  <div className="w-6 h-6 rounded-full overflow-hidden relative flex-shrink-0">
+                    <Image
+                      src={project.image}
+                      alt={locale === 'ja' ? project.nameJa : project.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="text-sm font-medium text-[var(--color-ink)]">
+                    {locale === 'ja' ? project.nameJa : project.name}
+                  </span>
+                  <span className="text-xs text-[var(--color-ink-muted)]">
+                    ({assetCount})
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Current Project Info */}
+          {currentProject && (
+            <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-[var(--color-bg)] to-transparent border border-[var(--color-border)]">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl overflow-hidden relative flex-shrink-0 shadow-md">
+                  <Image
+                    src={currentProject.image}
+                    alt={locale === 'ja' ? currentProject.nameJa : currentProject.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-[var(--color-ink)]">
+                      {locale === 'ja' ? currentProject.nameJa : currentProject.name}
+                    </h3>
+                    <ChevronRight size={14} className="text-[var(--color-ink-muted)]" />
+                    <span className="text-sm text-[var(--color-ink-muted)]">
+                      {filteredAssets.length} {locale === 'ja' ? '件のRWAアセット' : 'RWA Assets'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-[var(--color-ink-secondary)] truncate">
+                    {locale === 'ja' ? currentProject.descriptionJa : currentProject.description}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setActiveProject('all')}
+                  className="flex-shrink-0 px-3 py-1.5 rounded-lg text-sm text-[var(--color-primary)] hover:bg-[var(--color-primary-bg)] transition-colors"
+                >
+                  {locale === 'ja' ? 'クリア' : 'Clear'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Mobile Header */}
       <header className="md:hidden sticky top-0 z-40 bg-white border-b border-[var(--color-border)]">
         <div className="px-4 py-3">
           {/* Logo */}
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-lg font-bold text-[var(--color-primary)]">finango</h1>
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-[var(--color-primary)] flex items-center justify-center">
+                <span className="text-white font-bold text-xs">F</span>
+              </div>
+              <h1 className="text-lg font-bold text-[var(--color-primary)]">finango</h1>
+            </div>
           </div>
 
           {/* Search + Filter */}
@@ -259,6 +386,91 @@ export default function MarketsPage() {
             </button>
           </div>
         </div>
+
+        {/* Mobile: Project Scroller */}
+        <div className="border-t border-[var(--color-border)] px-4 py-3">
+          {/* Structure Indicator */}
+          <div className="flex items-center gap-1.5 mb-2">
+            <Layers size={12} className="text-[var(--color-primary)]" />
+            <span className="text-xs font-medium text-[var(--color-ink-secondary)]">
+              {locale === 'ja' ? 'プロジェクト' : 'Projects'}
+            </span>
+          </div>
+
+          {/* Horizontal Project Pills */}
+          <div
+            ref={projectScrollRef}
+            className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-hide"
+          >
+            <button
+              onClick={() => setActiveProject('all')}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                activeProject === 'all'
+                  ? 'bg-[var(--color-primary)] text-white'
+                  : 'bg-[var(--color-bg)] text-[var(--color-ink-secondary)] border border-[var(--color-border)]'
+              }`}
+            >
+              {locale === 'ja' ? 'すべて' : 'All'}
+            </button>
+            {projects.map((project) => (
+              <button
+                key={project.id}
+                onClick={() => setActiveProject(project.id)}
+                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  activeProject === project.id
+                    ? 'text-white shadow-sm'
+                    : 'bg-[var(--color-bg)] text-[var(--color-ink-secondary)] border border-[var(--color-border)]'
+                }`}
+                style={{
+                  backgroundColor: activeProject === project.id ? project.color : undefined,
+                }}
+              >
+                <div className="w-4 h-4 rounded-full overflow-hidden relative flex-shrink-0">
+                  <Image
+                    src={project.image}
+                    alt={locale === 'ja' ? project.nameJa : project.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                {locale === 'ja' ? project.nameJa : project.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile: Current Project Info */}
+        {currentProject && (
+          <div className="px-4 py-2 bg-[var(--color-bg)] border-t border-[var(--color-border)]">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg overflow-hidden relative flex-shrink-0">
+                <Image
+                  src={currentProject.image}
+                  alt={locale === 'ja' ? currentProject.nameJa : currentProject.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1">
+                  <span className="text-sm font-semibold text-[var(--color-ink)] truncate">
+                    {locale === 'ja' ? currentProject.nameJa : currentProject.name}
+                  </span>
+                  <ChevronRight size={12} className="text-[var(--color-ink-muted)] flex-shrink-0" />
+                  <span className="text-xs text-[var(--color-ink-muted)] flex-shrink-0">
+                    {filteredAssets.length}{locale === 'ja' ? '件' : ' assets'}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setActiveProject('all')}
+                className="p-1 text-[var(--color-ink-muted)]"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Desktop: Sidebar + Content */}
@@ -461,6 +673,53 @@ export default function MarketsPage() {
 
             {/* Filter Content */}
             <div className="p-4 space-y-6 pb-32">
+              {/* Project Filter */}
+              <div>
+                <h3 className="text-sm font-semibold text-[var(--color-ink)] mb-2 flex items-center gap-2">
+                  <Layers size={14} className="text-[var(--color-primary)]" />
+                  {locale === 'ja' ? 'プロジェクト' : 'Project'}
+                </h3>
+                <p className="text-xs text-[var(--color-ink-muted)] mb-3">
+                  {locale === 'ja' ? 'プロジェクトを選んでRWAアセットを探す' : 'Select a project to browse its RWA assets'}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setActiveProject('all')}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                      activeProject === 'all'
+                        ? 'bg-[var(--color-primary)] text-white'
+                        : 'bg-[var(--color-bg)] text-[var(--color-ink-secondary)] border border-[var(--color-border)]'
+                    }`}
+                  >
+                    {locale === 'ja' ? 'すべて' : 'All'}
+                  </button>
+                  {projects.map((project) => (
+                    <button
+                      key={project.id}
+                      onClick={() => setActiveProject(project.id)}
+                      className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                        activeProject === project.id
+                          ? 'text-white'
+                          : 'bg-[var(--color-bg)] text-[var(--color-ink-secondary)] border border-[var(--color-border)]'
+                      }`}
+                      style={{
+                        backgroundColor: activeProject === project.id ? project.color : undefined,
+                      }}
+                    >
+                      <div className="w-4 h-4 rounded-full overflow-hidden relative flex-shrink-0">
+                        <Image
+                          src={project.image}
+                          alt={locale === 'ja' ? project.nameJa : project.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      {locale === 'ja' ? project.nameJa : project.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Category */}
               <div>
                 <h3 className="text-sm font-semibold text-[var(--color-ink)] mb-3">

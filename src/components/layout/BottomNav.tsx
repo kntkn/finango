@@ -12,10 +12,10 @@ export default function BottomNav() {
   const router = useRouter();
   const { locale, setLocale } = useI18n();
   const { isOpen, toggle } = useSidebar();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
-  // Don't show nav on login page
-  if (pathname === '/login') {
+  // Don't show nav on login page or home page (mobile)
+  if (pathname === '/login' || pathname === '/') {
     return null;
   }
 
@@ -32,7 +32,7 @@ export default function BottomNav() {
       icon: LayoutGrid,
       labelEn: 'Markets',
       labelJa: 'マーケット',
-      requiresAuth: true,
+      requiresAuth: false, // Markets should be browsable without login
     },
     {
       href: '/portfolio',
@@ -61,20 +61,18 @@ export default function BottomNav() {
 
   return (
     <>
-      {/* Mobile Bottom Nav - Icons only, completely fixed */}
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
-        style={{
-          position: 'fixed',
-          transform: 'translateZ(0)', // Force GPU layer for stability
-          WebkitBackfaceVisibility: 'hidden',
-        }}
-      >
-        {/* Solid background - no transparency for stability */}
-        <div className="absolute inset-0 bg-white border-t border-[var(--color-border)]" />
-
+      {/* Mobile Bottom Nav - Super stable fixed positioning */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[9999] bg-white border-t border-[var(--color-border)]">
         {/* Safe area padding for notched devices */}
-        <div className="relative flex items-center justify-around px-6 py-3 pb-[max(12px,env(safe-area-inset-bottom))]">
+        <div
+          className="flex items-center justify-around"
+          style={{
+            paddingTop: '12px',
+            paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
+            paddingLeft: '16px',
+            paddingRight: '16px',
+          }}
+        >
           {navItems.map((item) => {
             const isActive =
               item.href === '/'
@@ -90,10 +88,9 @@ export default function BottomNav() {
                 href={item.href}
                 onClick={(e) => handleNavClick(e, item)}
                 className={`
-                  flex items-center justify-center w-12 h-12 rounded-xl
-                  transition-colors duration-150
+                  flex flex-col items-center justify-center gap-1 min-w-[60px] py-1
                   ${isActive && !isDisabled
-                    ? 'text-[var(--color-primary)] bg-[var(--color-primary-bg)]'
+                    ? 'text-[var(--color-primary)]'
                     : isDisabled
                     ? 'text-[var(--color-ink-muted)]/40'
                     : 'text-[var(--color-ink-muted)]'
@@ -101,9 +98,12 @@ export default function BottomNav() {
                 `}
               >
                 <item.icon
-                  size={24}
-                  strokeWidth={isActive ? 2 : 1.5}
+                  size={22}
+                  strokeWidth={isActive ? 2.5 : 1.5}
                 />
+                <span className={`text-[10px] ${isActive ? 'font-bold' : 'font-medium'}`}>
+                  {locale === 'ja' ? item.labelJa : item.labelEn}
+                </span>
               </Link>
             );
           })}
@@ -112,23 +112,28 @@ export default function BottomNav() {
           {isAuthenticated ? (
             <button
               onClick={handleLogout}
-              className="flex items-center justify-center w-12 h-12 rounded-xl text-[var(--color-ink-muted)] transition-colors duration-150"
+              className="flex flex-col items-center justify-center gap-1 min-w-[60px] py-1 text-[var(--color-ink-muted)]"
             >
-              <User size={24} strokeWidth={1.5} />
+              <User size={22} strokeWidth={1.5} />
+              <span className="text-[10px] font-medium">
+                {locale === 'ja' ? 'マイページ' : 'Account'}
+              </span>
             </button>
           ) : (
             <Link
               href="/login"
               className={`
-                flex items-center justify-center w-12 h-12 rounded-xl
-                transition-colors duration-150
+                flex flex-col items-center justify-center gap-1 min-w-[60px] py-1
                 ${pathname === '/login'
-                  ? 'text-[var(--color-primary)] bg-[var(--color-primary-bg)]'
+                  ? 'text-[var(--color-primary)]'
                   : 'text-[var(--color-ink-muted)]'
                 }
               `}
             >
-              <LogIn size={24} strokeWidth={1.5} />
+              <LogIn size={22} strokeWidth={1.5} />
+              <span className="text-[10px] font-medium">
+                {locale === 'ja' ? 'ログイン' : 'Login'}
+              </span>
             </Link>
           )}
         </div>
