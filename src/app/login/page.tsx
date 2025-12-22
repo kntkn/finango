@@ -114,12 +114,17 @@ export default function LoginPage() {
               <span className="text-white font-bold text-2xl">F</span>
             </div>
             <h1 className="text-2xl font-bold text-[var(--color-ink)]">
-              {locale === 'ja' ? 'ログイン' : 'Sign In'}
+              {locale === 'ja' ? 'ポートフォリオを作成' : 'Create Your Portfolio'}
             </h1>
-            <p className="text-sm text-[var(--color-ink-muted)] mt-2">
+            <p className="text-sm text-[var(--color-ink-muted)] mt-2 leading-relaxed">
               {locale === 'ja'
-                ? 'アカウントにログインしてアセットを探索'
-                : 'Log in to explore assets'}
+                ? 'お気に入りを保存し、資産を管理しましょう。'
+                : 'Save your favorites and manage your assets.'}
+            </p>
+            <p className="text-xs text-[var(--color-ink-muted)] mt-1">
+              {locale === 'ja'
+                ? '※ マーケットの閲覧はログインなしでも可能です'
+                : '※ Browsing the market is always open'}
             </p>
           </div>
 
@@ -235,12 +240,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Demo hint */}
-          <p className="text-xs text-center text-[var(--color-ink-muted)] mt-6">
-            {locale === 'ja'
-              ? 'デモ: 任意のメールアドレスと6文字以上のパスワードでログインできます'
-              : 'Demo: Use any email and 6+ character password'}
-          </p>
         </div>
       </div>
     </div>

@@ -21,11 +21,29 @@ const iconMap: Record<string, React.ComponentType<{ size?: number; className?: s
   clapperboard: Clapperboard,
 };
 
+type PeriodKey = '7d' | '30d' | 'ytd' | 'all';
+
+const periodLabels: Record<PeriodKey, { en: string; ja: string }> = {
+  '7d': { en: '7D', ja: '7日' },
+  '30d': { en: '30D', ja: '30日' },
+  'ytd': { en: 'YTD', ja: '年初来' },
+  'all': { en: 'All', ja: '全期間' },
+};
+
+// Mock performance data by period
+const performanceByPeriod: Record<PeriodKey, { changePercent: number; changeAmount: number }> = {
+  '7d': { changePercent: 2.3, changeAmount: 23000 },
+  '30d': { changePercent: 5.8, changeAmount: 58000 },
+  'ytd': { changePercent: 12.5, changeAmount: 125000 },
+  'all': { changePercent: 18.2, changeAmount: 182000 },
+};
+
 export default function PortfolioPage() {
   const { t, locale, setLocale } = useI18n();
   const [lineConnected, setLineConnected] = useState(false);
   const [showLineSection, setShowLineSection] = useState(false);
   const [expandedToken, setExpandedToken] = useState<string | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodKey>('all');
 
   // Calculate portfolio data
   const portfolioData = useMemo(() => {
@@ -123,21 +141,64 @@ export default function PortfolioPage() {
               {/* ============================================ */}
               <section className="mb-8">
                 <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Wallet size={16} className="text-[var(--color-primary)]" />
-                    <span className="text-sm font-semibold text-[var(--color-primary)]">
-                      {locale === 'ja' ? 'RWA総資産' : 'RWA Total Assets'}
-                    </span>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <Wallet size={16} className="text-[var(--color-primary)]" />
+                      <span className="text-sm font-semibold text-[var(--color-primary)]">
+                        {locale === 'ja' ? 'RWA総資産' : 'RWA Total Assets'}
+                      </span>
+                    </div>
+                    {/* Period Selector */}
+                    <div className="flex items-center bg-[var(--color-bg)] rounded-lg p-0.5">
+                      {(Object.keys(periodLabels) as PeriodKey[]).map((period) => (
+                        <button
+                          key={period}
+                          onClick={() => setSelectedPeriod(period)}
+                          className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                            selectedPeriod === period
+                              ? 'bg-white text-[var(--color-primary)] shadow-sm'
+                              : 'text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]'
+                          }`}
+                        >
+                          {locale === 'ja' ? periodLabels[period].ja : periodLabels[period].en}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <p className="text-3xl font-bold text-[var(--color-ink)] tracking-tight mb-2">
+
+                  {/* Total Value */}
+                  <p className="text-3xl font-bold text-[var(--color-ink)] tracking-tight">
                     {formatCurrency(portfolioData.rwaTotal)}
                   </p>
-                  <p className="text-sm text-[var(--color-ink-muted)] mb-4">
-                    {locale === 'ja' ? '現金相当の評価額' : 'Cash equivalent value'}
-                  </p>
+
+                  {/* Value Change */}
+                  <div className="flex items-center gap-3 mt-2 mb-4">
+                    <div className={`flex items-center gap-1 px-2.5 py-1 rounded-lg ${
+                      performanceByPeriod[selectedPeriod].changePercent >= 0 ? 'bg-green-50' : 'bg-red-50'
+                    }`}>
+                      <TrendingUp size={14} className={
+                        performanceByPeriod[selectedPeriod].changePercent >= 0 ? 'text-green-600' : 'text-red-600 rotate-180'
+                      } />
+                      <span className={`text-sm font-bold ${
+                        performanceByPeriod[selectedPeriod].changePercent >= 0 ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {performanceByPeriod[selectedPeriod].changePercent >= 0 ? '+' : ''}
+                        {performanceByPeriod[selectedPeriod].changePercent}%
+                      </span>
+                    </div>
+                    <span className={`text-sm font-medium ${
+                      performanceByPeriod[selectedPeriod].changeAmount >= 0 ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {performanceByPeriod[selectedPeriod].changeAmount >= 0 ? '+' : ''}
+                      {formatCurrency(performanceByPeriod[selectedPeriod].changeAmount)}
+                    </span>
+                    <span className="text-xs text-[var(--color-ink-muted)]">
+                      ({locale === 'ja' ? periodLabels[selectedPeriod].ja : periodLabels[selectedPeriod].en})
+                    </span>
+                  </div>
 
                   {/* Stats Row */}
-                  <div className="flex items-center gap-5 pt-4 border-t border-[var(--color-border)]">
+                  <div className="flex items-center gap-6 pt-4 border-t border-[var(--color-border)]">
                     <div>
                       <p className="text-xs text-[var(--color-ink-muted)]">{locale === 'ja' ? '保有銘柄' : 'Holdings'}</p>
                       <p className="text-lg font-semibold text-[var(--color-ink)]">{portfolioData.items.length}</p>
@@ -146,9 +207,9 @@ export default function PortfolioPage() {
                       <p className="text-xs text-[var(--color-ink-muted)]">{locale === 'ja' ? 'プロジェクト' : 'Projects'}</p>
                       <p className="text-lg font-semibold text-[var(--color-ink)]">{portfolioData.uniqueProjects.length}</p>
                     </div>
-                    <div className="ml-auto flex items-center gap-1.5 px-3 py-1 rounded-lg bg-green-50">
-                      <TrendingUp size={14} className="text-green-600" />
-                      <span className="text-sm font-semibold text-green-600">+12.5%</span>
+                    <div>
+                      <p className="text-xs text-[var(--color-ink-muted)]">{locale === 'ja' ? '取得原価' : 'Cost Basis'}</p>
+                      <p className="text-lg font-semibold text-[var(--color-ink)]">{formatCurrency(portfolioData.rwaTotal - performanceByPeriod['all'].changeAmount)}</p>
                     </div>
                   </div>
                 </div>
@@ -253,17 +314,26 @@ export default function PortfolioPage() {
               {/* SECTION 2: COMMUNITY TOKENS (Experience Exchange) */}
               {/* ============================================ */}
               <section className="mb-8">
-                <div className="flex items-center gap-2 mb-4">
+                <div className="flex items-center gap-2 mb-3">
                   <Coins size={18} className="text-[var(--color-ink)]" />
                   <h2 className="text-base font-semibold text-[var(--color-ink)]">
                     {locale === 'ja' ? 'コミュニティトークン' : 'Community Tokens'}
                   </h2>
                 </div>
-                <p className="text-sm text-[var(--color-ink-muted)] mb-4 -mt-2">
-                  {locale === 'ja'
-                    ? '体験や特典と交換できるトークンです'
-                    : 'Exchange tokens for experiences and benefits'}
-                </p>
+
+                {/* Token Definition Card */}
+                <div className="bg-gradient-to-r from-[var(--color-primary)]/5 to-[var(--color-mint)]/5 rounded-xl border border-[var(--color-border)] p-4 mb-4">
+                  <p className="text-sm text-[var(--color-ink-secondary)] mb-2">
+                    {locale === 'ja'
+                      ? 'コミュニティトークンとは？'
+                      : 'What are Community Tokens?'}
+                  </p>
+                  <p className="text-sm text-[var(--color-ink-secondary)] leading-relaxed">
+                    {locale === 'ja'
+                      ? 'RWAを保有することで獲得できるポイントです。プロジェクトごとに発行され、特別な体験や特典と交換できます。現金への換金はできませんが、コミュニティ内での価値交換に使用できます。'
+                      : 'Points earned by holding RWAs. Each project issues its own tokens that can be redeemed for exclusive experiences and benefits. Tokens cannot be converted to cash but can be used for value exchange within the community.'}
+                  </p>
+                </div>
 
                 <div className="space-y-4">
                   {mockTokens.map((token) => {
@@ -415,26 +485,75 @@ export default function PortfolioPage() {
                 </div>
               </section>
 
-              {/* External Link Section */}
+              {/* External Link Section - Enhanced Sell Info */}
               <section className="mb-6">
-                <div className="bg-white rounded-xl border border-[var(--color-border)] p-5">
-                  <h3 className="font-semibold text-[var(--color-ink)] mb-2">
-                    {locale === 'ja' ? 'アセットの売却' : 'Sell Your Assets'}
-                  </h3>
-                  <p className="text-sm text-[var(--color-ink-secondary)] mb-4">
-                    {locale === 'ja'
-                      ? 'ANGOの公式サイトで保有アセットの売却・管理ができます。'
-                      : 'Manage and sell your assets on the official ANGO website.'}
-                  </p>
-                  <a
-                    href="https://ango.jp/portfolio"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-3 px-4 border border-[var(--color-border)] rounded-xl font-medium text-sm text-[var(--color-ink)] hover:bg-[var(--color-bg)] transition-colors"
-                  >
-                    <span>{locale === 'ja' ? 'ANGOで管理する' : 'Manage on ANGO'}</span>
-                    <ExternalLink size={16} />
-                  </a>
+                <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <ArrowRight size={18} className="text-[var(--color-primary)]" />
+                      <h3 className="font-semibold text-[var(--color-ink)]">
+                        {locale === 'ja' ? 'アセットの売却' : 'Sell Your Assets'}
+                      </h3>
+                    </div>
+                    <p className="text-sm text-[var(--color-ink-secondary)] mb-4">
+                      {locale === 'ja'
+                        ? 'ANGOマーケットプレイスで他のユーザーに売却できます。'
+                        : 'Sell to other users on the ANGO marketplace.'}
+                    </p>
+
+                    {/* Sell Info Grid */}
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                        <p className="text-xs text-[var(--color-ink-muted)] mb-1">
+                          {locale === 'ja' ? '売却手数料' : 'Selling Fee'}
+                        </p>
+                        <p className="text-sm font-bold text-[var(--color-ink)]">2.5%</p>
+                      </div>
+                      <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                        <p className="text-xs text-[var(--color-ink-muted)] mb-1">
+                          {locale === 'ja' ? '保有期間制限' : 'Holding Period'}
+                        </p>
+                        <p className="text-sm font-bold text-[var(--color-ink)]">
+                          {locale === 'ja' ? 'なし' : 'None'}
+                        </p>
+                      </div>
+                      <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                        <p className="text-xs text-[var(--color-ink-muted)] mb-1">
+                          {locale === 'ja' ? '想定売却期間' : 'Time to Sell'}
+                        </p>
+                        <p className="text-sm font-bold text-[var(--color-ink)]">
+                          {locale === 'ja' ? '1〜4週間' : '1-4 weeks'}
+                        </p>
+                      </div>
+                      <div className="bg-[var(--color-bg)] rounded-lg p-3">
+                        <p className="text-xs text-[var(--color-ink-muted)] mb-1">
+                          {locale === 'ja' ? '売却方法' : 'How to Sell'}
+                        </p>
+                        <p className="text-sm font-bold text-[var(--color-ink)]">
+                          {locale === 'ja' ? 'マーケット出品' : 'List on Market'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <a
+                      href="https://ango.jp/portfolio"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-[var(--color-primary)] text-white rounded-xl font-semibold text-sm hover:bg-[var(--color-primary-dark)] transition-colors"
+                    >
+                      <span>{locale === 'ja' ? 'ANGOで売却する' : 'Sell on ANGO'}</span>
+                      <ExternalLink size={16} />
+                    </a>
+                  </div>
+
+                  {/* Additional Info */}
+                  <div className="px-5 py-3 bg-[var(--color-bg)] border-t border-[var(--color-border)]">
+                    <p className="text-xs text-[var(--color-ink-muted)]">
+                      {locale === 'ja'
+                        ? '※ 市場状況により売却に時間がかかる場合があります。元本保証はありません。'
+                        : '※ Selling time may vary based on market conditions. Principal is not guaranteed.'}
+                    </p>
+                  </div>
                 </div>
               </section>
 

@@ -3,13 +3,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useI18n } from '@/lib/i18n';
-import { useAuth } from '@/lib/auth';
 import { assets } from '@/data/assets';
-import { ArrowRight, Globe, LogIn } from 'lucide-react';
+import { ArrowRight, Globe, Compass } from 'lucide-react';
 
 export default function Home() {
   const { locale, setLocale } = useI18n();
-  const { isAuthenticated } = useAuth();
 
   const toggleLocale = () => {
     setLocale(locale === 'en' ? 'ja' : 'en');
@@ -108,35 +106,25 @@ export default function Home() {
             {/* Main Headline */}
             <h1 className="text-3xl font-bold text-[var(--color-ink)] leading-tight tracking-tight mb-3">
               {locale === 'ja'
-                ? '応援が、資産になる。'
-                : 'Your Support Becomes an Asset.'}
+                ? 'ロマンを、資産にする。'
+                : 'Turn Your Passion Into Assets.'}
             </h1>
 
-            <p className="text-sm text-[var(--color-ink-muted)] mb-6 max-w-xs mx-auto">
+            <p className="text-sm text-[var(--color-ink-muted)] mb-6 max-w-xs mx-auto leading-relaxed">
               {locale === 'ja'
-                ? '厳選されたRWAアセットを発見し、新しい投資体験を。'
-                : 'Discover curated RWA assets and explore new investment experiences.'}
+                ? '厳選された実物資産（RWA）を\n保有・売買できるマーケット。'
+                : 'Curated real-world assets\nyou can own and trade.'}
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col gap-3">
-              {isAuthenticated ? (
-                <Link
-                  href="/search"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[var(--color-primary)] text-white rounded-xl font-semibold shadow-sm hover:shadow-md hover:bg-[var(--color-primary-dark)] transition-all"
-                >
-                  <span>{locale === 'ja' ? 'マーケットを見る' : 'View Markets'}</span>
-                  <ArrowRight size={18} />
-                </Link>
-              ) : (
-                <Link
-                  href="/login"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[var(--color-primary)] text-white rounded-xl font-semibold shadow-sm hover:shadow-md hover:bg-[var(--color-primary-dark)] transition-all"
-                >
-                  <LogIn size={18} />
-                  <span>{locale === 'ja' ? 'ログインして始める' : 'Log in to Start'}</span>
-                </Link>
-              )}
+              <Link
+                href="/search"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[var(--color-primary)] text-white rounded-xl font-semibold shadow-sm hover:shadow-md hover:bg-[var(--color-primary-dark)] transition-all"
+              >
+                <Compass size={18} />
+                <span>{locale === 'ja' ? 'マーケットを探索' : 'Explore Markets'}</span>
+              </Link>
               <button
                 onClick={toggleLocale}
                 className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] transition-colors"
@@ -265,37 +253,27 @@ export default function Home() {
               {/* Main Headline - Large & Bold */}
               <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold text-[var(--color-ink)] leading-[1.1] tracking-tight">
                 {locale === 'ja'
-                  ? '応援が、資産になる。'
-                  : 'Your Support Becomes an Asset.'}
+                  ? 'ロマンを、資産にする。'
+                  : 'Turn Your Passion Into Assets.'}
               </h1>
+
+              {/* Sub Headline */}
+              <p className="mt-6 text-lg text-[var(--color-ink-secondary)] max-w-xl mx-auto">
+                {locale === 'ja'
+                  ? '厳選された実物資産（RWA）を保有・売買できるマーケット。'
+                  : 'Curated real-world assets you can own and trade.'}
+              </p>
 
               {/* CTA Button - Trust Blue */}
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                {isAuthenticated ? (
-                  <>
-                    <Link
-                      href="/search"
-                      className="group inline-flex items-center gap-2.5 px-7 py-3.5 bg-[var(--color-primary)] text-white rounded-xl text-base font-semibold shadow-sm hover:shadow-md hover:bg-[var(--color-primary-dark)] transition-all duration-200"
-                    >
-                      <span>{locale === 'ja' ? 'マーケットを見る' : 'View Markets'}</span>
-                      <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-200" />
-                    </Link>
-                    <Link
-                      href="/portfolio"
-                      className="inline-flex items-center gap-2 px-6 py-3.5 text-[var(--color-ink-secondary)] hover:text-[var(--color-ink)] transition-colors duration-200"
-                    >
-                      <span className="text-base font-medium">{locale === 'ja' ? 'ポートフォリオを見る' : 'View Portfolio'}</span>
-                    </Link>
-                  </>
-                ) : (
-                  <Link
-                    href="/login"
-                    className="group inline-flex items-center gap-2.5 px-7 py-3.5 bg-[var(--color-primary)] text-white rounded-xl text-base font-semibold shadow-sm hover:shadow-md hover:bg-[var(--color-primary-dark)] transition-all duration-200"
-                  >
-                    <LogIn size={18} />
-                    <span>{locale === 'ja' ? 'ログインして始める' : 'Log in to Start'}</span>
-                  </Link>
-                )}
+                <Link
+                  href="/search"
+                  className="group inline-flex items-center gap-2.5 px-8 py-4 bg-[var(--color-primary)] text-white rounded-xl text-base font-semibold shadow-sm hover:shadow-md hover:bg-[var(--color-primary-dark)] transition-all duration-200"
+                >
+                  <Compass size={20} />
+                  <span>{locale === 'ja' ? 'マーケットを探索' : 'Explore Markets'}</span>
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-200" />
+                </Link>
               </div>
             </div>
           </div>

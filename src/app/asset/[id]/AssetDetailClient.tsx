@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Asset, Project } from '@/data/projects';
 import { useI18n } from '@/lib/i18n';
 import { useLikes } from '@/lib/likes';
-import { ChevronLeft, ExternalLink, Heart, Share2, Check, Globe, Wine, Leaf, Sparkles, Home, Palmtree, Mountain, Flag, Rocket, Clapperboard, ShoppingCart, TrendingUp, Users } from 'lucide-react';
+import { ChevronLeft, ExternalLink, Heart, Share2, Check, Globe, Wine, Leaf, Sparkles, Home, Palmtree, Mountain, Flag, Rocket, Clapperboard, ShoppingCart, TrendingUp, Users, Shield, FileCheck, AlertTriangle, Coins, ArrowRightLeft, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -24,6 +24,59 @@ const iconMap: Record<string, React.ComponentType<{ size?: number; className?: s
 interface AssetDetailClientProps {
   asset: Asset;
   project: Project | undefined;
+}
+
+// Trust Card Component
+interface TrustCardProps {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+  accentColor?: string;
+}
+
+function TrustCard({ icon, title, children, defaultOpen = false, accentColor }: TrustCardProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="bg-white rounded-xl border border-[var(--color-border)] overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-4 text-left hover:bg-[var(--color-bg)]/50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div
+            className="w-10 h-10 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: `${accentColor || 'var(--color-primary)'}15` }}
+          >
+            {icon}
+          </div>
+          <span className="font-semibold text-[var(--color-ink)]">{title}</span>
+        </div>
+        <ChevronDown
+          size={20}
+          className={`text-[var(--color-ink-muted)] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-4 pb-4 pt-0 border-t border-[var(--color-border)]">
+              <div className="pt-4">
+                {children}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 export default function AssetDetailClient({ asset, project }: AssetDetailClientProps) {
@@ -312,7 +365,7 @@ export default function AssetDetailClient({ asset, project }: AssetDetailClientP
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mb-8"
+          className="mb-6"
         >
           <div className="bg-white rounded-xl border border-[var(--color-border)] p-5">
             <h2 className="text-lg font-semibold mb-4 text-[var(--color-ink)]">
@@ -343,6 +396,194 @@ export default function AssetDetailClient({ asset, project }: AssetDetailClientP
               ))}
             </ul>
           </div>
+        </motion.div>
+
+        {/* Trust Cards - 納得カード */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="mb-8 space-y-3"
+        >
+          <h2 className="text-lg font-semibold text-[var(--color-ink)] mb-4">
+            {locale === 'ja' ? '購入前にご確認ください' : 'Before You Buy'}
+          </h2>
+
+          {/* 1. Curation Standard - 厳選基準 */}
+          <TrustCard
+            icon={<Shield size={20} style={{ color: project?.color || 'var(--color-primary)' }} />}
+            title={locale === 'ja' ? '厳選基準' : 'Curation Standard'}
+            accentColor={project?.color}
+            defaultOpen={true}
+          >
+            <ul className="space-y-2 text-sm text-[var(--color-ink-secondary)]">
+              {(locale === 'ja'
+                ? [
+                    'ANGOの専門チームによる事前審査を通過',
+                    '運営元の実績・財務状況を確認済み',
+                    '法的要件・コンプライアンスをクリア',
+                    '市場価値と成長可能性を評価済み',
+                  ]
+                : [
+                    'Pre-screened by ANGO expert team',
+                    'Verified track record and financials of operator',
+                    'Legal requirements and compliance cleared',
+                    'Market value and growth potential evaluated',
+                  ]
+              ).map((item, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <Check size={14} className="flex-shrink-0 mt-0.5 text-[var(--color-mint)]" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </TrustCard>
+
+          {/* 2. Transparency - 透明性 */}
+          <TrustCard
+            icon={<FileCheck size={20} style={{ color: project?.color || 'var(--color-primary)' }} />}
+            title={locale === 'ja' ? '透明性' : 'Transparency'}
+            accentColor={project?.color}
+          >
+            <div className="space-y-4 text-sm">
+              <div>
+                <p className="font-medium text-[var(--color-ink)] mb-1">
+                  {locale === 'ja' ? '価格算定根拠' : 'Price Basis'}
+                </p>
+                <p className="text-[var(--color-ink-secondary)]">
+                  {locale === 'ja'
+                    ? '市場取引価格・鑑定評価に基づく適正価格'
+                    : 'Fair price based on market transactions and appraisals'}
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-[var(--color-ink)] mb-1">
+                  {locale === 'ja' ? '情報更新' : 'Updates'}
+                </p>
+                <p className="text-[var(--color-ink-secondary)]">
+                  {locale === 'ja'
+                    ? '月次レポートでプロジェクト進捗を共有'
+                    : 'Monthly reports on project progress'}
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-[var(--color-ink)] mb-1">
+                  {locale === 'ja' ? '記録・証明' : 'Records'}
+                </p>
+                <p className="text-[var(--color-ink-secondary)]">
+                  {locale === 'ja'
+                    ? 'ブロックチェーンに所有権を記録、改ざん不可'
+                    : 'Ownership recorded on blockchain, tamper-proof'}
+                </p>
+              </div>
+            </div>
+          </TrustCard>
+
+          {/* 3. Risks - リスク */}
+          <TrustCard
+            icon={<AlertTriangle size={20} style={{ color: '#F59E0B' }} />}
+            title={locale === 'ja' ? 'リスク' : 'Risks'}
+            accentColor="#F59E0B"
+          >
+            <ul className="space-y-2 text-sm text-[var(--color-ink-secondary)]">
+              {(locale === 'ja'
+                ? [
+                    '市場変動により価値が下落する可能性があります',
+                    '流動性が低く、すぐに売却できない場合があります',
+                    'プロジェクトの進捗状況により予定が変更される場合があります',
+                    '元本保証はありません',
+                  ]
+                : [
+                    'Value may decrease due to market fluctuations',
+                    'Low liquidity may prevent immediate sale',
+                    'Project schedules may change based on progress',
+                    'Principal is not guaranteed',
+                  ]
+              ).map((risk, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-amber-500 mt-2" />
+                  <span>{risk}</span>
+                </li>
+              ))}
+            </ul>
+          </TrustCard>
+
+          {/* 4. Fees - 手数料 */}
+          <TrustCard
+            icon={<Coins size={20} style={{ color: project?.color || 'var(--color-primary)' }} />}
+            title={locale === 'ja' ? '手数料' : 'Fees'}
+            accentColor={project?.color}
+          >
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between items-center py-2 border-b border-[var(--color-border)]">
+                <span className="text-[var(--color-ink-secondary)]">
+                  {locale === 'ja' ? '購入手数料' : 'Purchase Fee'}
+                </span>
+                <span className="font-semibold text-[var(--color-ink)]">
+                  {locale === 'ja' ? '無料' : 'Free'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-[var(--color-border)]">
+                <span className="text-[var(--color-ink-secondary)]">
+                  {locale === 'ja' ? '売却手数料' : 'Selling Fee'}
+                </span>
+                <span className="font-semibold text-[var(--color-ink)]">2.5%</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-[var(--color-border)]">
+                <span className="text-[var(--color-ink-secondary)]">
+                  {locale === 'ja' ? '管理手数料' : 'Management Fee'}
+                </span>
+                <span className="font-semibold text-[var(--color-ink)]">
+                  {locale === 'ja' ? '年1.0%' : '1.0%/year'}
+                </span>
+              </div>
+              <p className="text-xs text-[var(--color-ink-muted)]">
+                {locale === 'ja'
+                  ? '※ 手数料は予告なく変更される場合があります'
+                  : '※ Fees subject to change without notice'}
+              </p>
+            </div>
+          </TrustCard>
+
+          {/* 5. Exit - 売却 */}
+          <TrustCard
+            icon={<ArrowRightLeft size={20} style={{ color: project?.color || 'var(--color-primary)' }} />}
+            title={locale === 'ja' ? '売却について' : 'Exit Options'}
+            accentColor={project?.color}
+          >
+            <div className="space-y-4 text-sm">
+              <div>
+                <p className="font-medium text-[var(--color-ink)] mb-1">
+                  {locale === 'ja' ? '売却方法' : 'How to Sell'}
+                </p>
+                <p className="text-[var(--color-ink-secondary)]">
+                  {locale === 'ja'
+                    ? 'ANGOマーケットプレイスで他のユーザーに売却可能'
+                    : 'Sell to other users on ANGO marketplace'}
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-[var(--color-ink)] mb-1">
+                  {locale === 'ja' ? '売却条件' : 'Requirements'}
+                </p>
+                <p className="text-[var(--color-ink-secondary)]">
+                  {locale === 'ja'
+                    ? '保有期間の制限なし。いつでも出品可能'
+                    : 'No holding period required. List anytime'}
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-[var(--color-ink)] mb-1">
+                  {locale === 'ja' ? '想定売却期間' : 'Expected Time to Sell'}
+                </p>
+                <p className="text-[var(--color-ink-secondary)]">
+                  {locale === 'ja'
+                    ? '通常1〜4週間（市場状況により異なる）'
+                    : 'Typically 1-4 weeks (varies by market conditions)'}
+                </p>
+              </div>
+            </div>
+          </TrustCard>
         </motion.div>
 
         {/* CTA Section */}
